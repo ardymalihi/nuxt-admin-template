@@ -2,10 +2,11 @@
 export default defineNuxtConfig({
   modules: [
     '@nuxt/devtools',
+    '@nuxtjs/tailwindcss',
   ],
   devtools: { enabled: true },
   sourcemap: {
     server: true,
     client: true
-  }
+  },
 })
