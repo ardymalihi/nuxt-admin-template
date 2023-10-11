@@ -1,6 +1,12 @@
+<script setup>
+const runtimeConfig = useRuntimeConfig();
+onMounted(() => {
+    console.log(runtimeConfig.public.version)
+})
+</script>
 <template>
-  <!-- Header Section -->
-  <header class="bg-white shadow-md py-4">
+    <!-- Header Section -->
+    <header class="bg-white shadow-md py-4">
         <div class="container mx-auto flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-semibold">SAAS Product</h1>
@@ -11,8 +17,8 @@
             </div>
         </div>
     </header>
-  <!-- Home Section -->
-  <section id="home" class="bg-blue-500 text-white py-20">
+    <!-- Home Section -->
+    <section id="home" class="bg-blue-500 text-white py-20">
         <div class="container mx-auto text-center">
             <h1 class="text-4xl font-bold mb-4">Welcome to Our SAAS Product</h1>
             <p class="text-lg">Powerful solutions for your business needs.</p>
@@ -25,7 +31,8 @@
             <h2 class="text-3xl font-semibold text-center mb-8">About Us</h2>
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-4 md:mb-0">
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae mauris non tortor hendrerit iaculis.</p>
+                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae mauris non
+                        tortor hendrerit iaculis.</p>
                 </div>
             </div>
         </div>
@@ -76,11 +83,13 @@
                             <label for="message" class="block mb-2">Message:</label>
                             <textarea id="message" name="message" class="w-full border rounded-md py-2 px-3"></textarea>
                         </div>
-                        <button type="submit" class="bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600">Send Message</button>
+                        <button type="submit" class="bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600">Send
+                            Message</button>
                     </form>
                 </div>
                 <div class="md:w-1/2 ml-5">
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae mauris non tortor hendrerit iaculis.</p>
+                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae mauris non
+                        tortor hendrerit iaculis.</p>
                 </div>
             </div>
         </div>
@@ -88,7 +97,6 @@
     <!-- Footer Section -->
     <footer class="bg-gray-800 text-white py-4">
         <div class="container mx-auto text-center">
-            <p>&copy; 2023 SAAS Product. All rights reserved.</p>
+            <p>&copy; 2023 SAAS Product. All rights reserved. version {{ runtimeConfig.public.version }}</p>
         </div>
-    </footer>
-</template>
+    </footer></template>
