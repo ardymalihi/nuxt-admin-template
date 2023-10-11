@@ -28,7 +28,7 @@ async function signup() {
 <template>
     <div class="bg-gray-800 flex items-center justify-center h-screen">
         <div class="mb-10 mr-10 mt-10 flex flex-col gap-1 rounded-lg border border-gray-200 bg-gray-100 p-5 shadow-sm">
-            <div class="text-lg text-center">Signup</div>
+            <div class="text-lg text-center">Sign up</div>
             <form @submit.prevent="signup">
                 <div class="mb-4 flex flex-col gap-5">
                     <div>
@@ -48,7 +48,7 @@ async function signup() {
                     </div>
                     <div>
                         <button
-                            class="w-full focus:shadow-outline rounded bg-blue-500 px-2 py-2 text-white hover:bg-blue-700 focus:outline-none">Signup</button>
+                            class="w-full focus:shadow-outline rounded bg-blue-500 px-2 py-2 text-white hover:bg-blue-700 focus:outline-none">Sign up</button>
                     </div>
                     <div class="w-full text-center">
                         <span class="text-xs">Alredy have an account? </span><a class="text-xs text-blue-500 hover:text-blue-700" href="/login">Login</a>

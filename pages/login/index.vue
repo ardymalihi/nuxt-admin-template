@@ -5,6 +5,8 @@ const password = ref("");
 const errorMessage = ref("");
 const successMessage = ref("");
 
+const router = useRouter();
+
 async function login() {
     try {
         const { error } = await client.auth.signInWithPassword({
@@ -14,6 +16,7 @@ async function login() {
         if (error) throw error;
         successMessage.value = "Scuccess"
         errorMessage.value = "";
+        router.push("/");
     } catch (error) {
         successMessage.value = "";
         errorMessage.value = String(error);

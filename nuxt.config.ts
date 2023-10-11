@@ -13,6 +13,9 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/supabase',
   ],
+  supabase: {
+    redirect: false,
+  },
   devtools: { enabled: true },
   sourcemap: {
     server: true,
