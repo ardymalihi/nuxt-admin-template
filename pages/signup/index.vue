@@ -9,7 +9,7 @@ const successMessage = ref("");
 async function signup() {
     try {
         if (password.value !== confirmPassword.value) {
-            errorMessage.value = "password and confirm password don't match";
+            errorMessage.value = "The confirm password does not match";
             return;
         }
         const { error } = await client.auth.signUp({
@@ -21,7 +21,7 @@ async function signup() {
         errorMessage.value = "";
     } catch (error) {
         successMessage.value = "";
-        errorMessage.value = String(error);
+        errorMessage.value = (error as Error).message;
     }
 }
 </script>

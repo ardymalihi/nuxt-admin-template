@@ -19,7 +19,7 @@ async function login() {
         router.push("/");
     } catch (error) {
         successMessage.value = "";
-        errorMessage.value = String(error);
+        errorMessage.value = (error as Error).message;
     }
 }
 </script>
