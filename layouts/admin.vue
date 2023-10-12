@@ -1,11 +1,5 @@
-<script setup>
-definePageMeta({
-    layout: "admin",
-});
-</script>
 <template>
-    <div>
-        Admin Layout Used
-        <NuxtPage />
+    <div class="bg-gray-800">
+        <slot />
     </div>
 </template>

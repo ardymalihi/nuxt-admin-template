@@ -1,4 +1,7 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: "admin",
+});
 const client = useSupabaseClient();
 const email = ref("");
 const password = ref("");
@@ -26,24 +29,24 @@ async function signup() {
 }
 </script>
 <template>
-    <div class="bg-gray-800 flex items-center justify-center h-screen">
+    <div class="flex items-center justify-center h-screen">
         <div class="mb-10 mr-10 mt-10 flex flex-col gap-1 rounded-lg border border-gray-200 bg-gray-100 p-5 shadow-sm">
             <div class="text-lg text-center">Sign up</div>
             <form @submit.prevent="signup">
                 <div class="mb-4 flex flex-col gap-5">
                     <div>
                         <label class="p-1 text-xs" for="email">email</label>
-                        <input v-model="email" class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" id="username"
+                        <input v-model="email" class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" id="email"
                             type="text" placeholder="email" />
                     </div>
                     <div>
                         <label class="p-1 text-xs" for="create password">create password</label>
-                        <input v-model="password" class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" id="username"
+                        <input v-model="password" class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" id="password"
                             type="password" placeholder="create password" />
                     </div>
                     <div>
                         <label class="p-1 text-xs" for="confirm password">confirm password</label>
-                        <input v-model="confirmPassword" class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" id="username"
+                        <input v-model="confirmPassword" class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" id="confirmPassword"
                             type="password" placeholder="confirm password" />
                     </div>
                     <div>
