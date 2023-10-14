@@ -2,14 +2,11 @@
 definePageMeta({
   layout: "admin",
 });
-//import { useAuthStore } from "../../stores/auth";
 const client = useSupabaseClient();
 const email = ref("");
 const password = ref("");
 const errorMessage = ref("");
 const successMessage = ref("");
-
-//const auth = useAuthStore();
 
 const router = useRouter();
 
@@ -22,7 +19,6 @@ async function login() {
         if (error) throw error;
         successMessage.value = "Scuccess"
         errorMessage.value = "";
-        //auth.setUser(data.user);
         router.push("/");
     } catch (error) {
         successMessage.value = "";
@@ -32,7 +28,7 @@ async function login() {
 </script>
 
 <template>
-    <div class="flex items-center justify-center h-screen">
+    <div class="flex items-center justify-center h-screen w-screen">
         <div class="mb-10 mr-10 mt-10 flex flex-col gap-1 rounded-lg border border-gray-200 bg-gray-100 p-5 shadow-sm">
             <div class="text-lg text-center">Login</div>
             <form @submit.prevent="login" class="">

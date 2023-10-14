@@ -15,11 +15,13 @@ watchEffect(() => {
     }
 })
 
-    const { data: tasks, error } =  await client.from("tasks").select("id, title, completed").order("created_at");
-    
+const { data: tasks, error } = await client.from("tasks").select("id, title, completed").order("created_at");
+
 
 console.log(tasks);
 </script>
 <template>
-    <h1>Tasks</h1>
+    <div class="bg-gray-300 p-10 m-10">
+        <h1>Tasks</h1>
+    </div>
 </template>
