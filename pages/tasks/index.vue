@@ -14,11 +14,11 @@ watchEffect(() => {
         router.push("/login");
     }
 })
+if (user.value) {
+    const { data: tasks, error } = await client.from("tasks").select("id, title, completed").eq("user_id", user.value.id).order("created_at");
+    console.log(tasks);
+}
 
-const { data: tasks, error } = await client.from("tasks").select("id, title, completed").order("created_at");
-
-
-console.log(tasks);
 </script>
 <template>
     <div class="bg-gray-300 p-10 m-10">
