@@ -1,25 +1,18 @@
 <script setup lang="ts">
 definePageMeta({
     layout: "admin",
+    middleware: [
+    'auth',
+  ]
 });
-import { watchEffect } from 'vue';
 
-const user = useSupabaseUser();
 const client = useSupabaseClient();
-
-const router = useRouter();
 
 interface Task {
     id: number;
     title: string;
     completed: boolean;
 }
-
-watchEffect(() => {
-    if (!user.value) {
-        router.push("/login");
-    }
-})
 
 const { data: tasks, error } = await client.from("tasks").select("id, title, completed").order("created_at");
 console.log("tasks:", tasks);
