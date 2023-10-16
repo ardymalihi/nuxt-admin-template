@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-gray-800 flex min-h-screen">
-        <section>
+    <div class="bg-gray-200 flex min-h-screen">
+        <section class="container mx-auto">
             <slot />
         </section>
     </div>
