@@ -13,7 +13,6 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/supabase',
     '@pinia/nuxt',
-    '@nuxtjs/color-mode',
   ],
   supabase: {
     redirect: false,
@@ -22,9 +21,5 @@ export default defineNuxtConfig({
   sourcemap: {
     server: true,
     client: true
-  },
-  colorMode: {
-    preference: 'light', // default theme
-    dataValue: 'theme', // activate data-theme in <html> tag
   },
 })
