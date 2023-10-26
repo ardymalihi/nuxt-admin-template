@@ -5,7 +5,7 @@ const router = useRouter();
 
 async function logout() {
     await client.auth.signOut();
-    router.push("/");
+    router.push("/login");
 }
 </script>
 <template>
@@ -16,11 +16,11 @@ async function logout() {
                 <h1 class="text-2xl font-semibold">SAAS Product</h1>
             </div>
             <div v-if="user">
-                <button @click="logout" class="text-s text-blue-500 hover:text-blue-700">Logout</button>
+                <button @click="logout" class="text-s text-cyan-500 hover:text-cyan-700">Logout</button>
             </div>
             <div v-else>
-                <a href="/login" class="text-s text-blue-500 hover:text-blue-700 mr-4">Login</a>
-                <a href="/signup" class="text-s text-blue-500 hover:text-blue-700">Sign Up</a>
+                <a href="/login" class="text-s text-cyan-500 hover:text-cyan-700 mr-4">Login</a>
+                <a href="/signup" class="text-s text-cyan-500 hover:text-cyan-700">Sign Up</a>
             </div>
         </div>
     </header>

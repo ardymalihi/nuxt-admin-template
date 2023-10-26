@@ -1,6 +1,6 @@
 <template>
     <!-- Home Section -->
-    <section id="home" class="bg-blue-500 text-white py-20">
+    <section id="home" class="bg-cyan-500 text-white py-20">
         <div class="container mx-auto text-center">
             <h1 class="text-4xl font-bold mb-4">Welcome to Our SAAS Product</h1>
             <p class="text-lg">Powerful solutions for your business needs.</p>
@@ -65,7 +65,7 @@
                             <label for="message" class="block mb-2">Message:</label>
                             <textarea id="message" name="message" class="w-full border rounded-md py-2 px-3"></textarea>
                         </div>
-                        <button type="submit" class="bg-blue-500 text-white rounded-md py-2 px-4 hover:bg-blue-600">Send
+                        <button type="submit" class="bg-cyan-500 text-white rounded-md py-2 px-4 hover:bg-cyan-600">Send
                             Message</button>
                     </form>
                 </div>

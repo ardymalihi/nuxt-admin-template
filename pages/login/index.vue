@@ -44,14 +44,14 @@ async function login() {
                             type="password" placeholder="password" />
                     </div>
                     <div class="w-full text-center">
-                        <a class="text-xs text-blue-500 hover:text-blue-700" href="/forgot">Forgot password?</a>
+                        <a class="text-xs text-cyan-500 hover:text-cyan-700" href="/forgot">Forgot password?</a>
                     </div>
                     <div>
                         <button
-                            class="w-full focus:shadow-outline rounded bg-blue-500 px-2 py-2 text-white hover:bg-blue-700 focus:outline-none">Login</button>
+                            class="w-full focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Login</button>
                     </div>
                     <div class="w-full text-center">
-                        <span class="text-xs">Don't have an account? </span><a class="text-xs text-blue-500 hover:text-blue-700" href="/signup">Signup</a>
+                        <span class="text-xs">Don't have an account? </span><a class="text-xs text-cyan-500 hover:text-cyan-600" href="/signup">Signup</a>
                     </div>
                 </div>
             </form>

@@ -51,10 +51,10 @@ async function signup() {
                     </div>
                     <div>
                         <button
-                            class="w-full focus:shadow-outline rounded bg-blue-500 px-2 py-2 text-white hover:bg-blue-700 focus:outline-none">Sign up</button>
+                            class="w-full focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Sign up</button>
                     </div>
                     <div class="w-full text-center">
-                        <span class="text-xs">Alredy have an account? </span><a class="text-xs text-blue-500 hover:text-blue-700" href="/login">Login</a>
+                        <span class="text-xs">Alredy have an account? </span><a class="text-xs text-cyan-500 hover:text-cyan-600" href="/login">Login</a>
                     </div>
                 </div>
             </form>
