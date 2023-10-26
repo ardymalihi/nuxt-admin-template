@@ -21,7 +21,7 @@ console.log("tasks:", tasks);
 </script>
 <template>
     <div class="container mx-auto">
-        <div class="bg-white shadow-md rounded-md">
+        <div class="bg-white shadow-md rounded-md overflow-hidden">
             <div class="flex h-12">
                 <div class="w-1/3 p-2 bg-blue-500 text-white">ID</div>
                 <div class="w-1/3 p-2 bg-blue-500 text-white">Title</div>
