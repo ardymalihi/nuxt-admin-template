@@ -44,7 +44,7 @@ function toggleSidebar() {
     <div class="bg-gradient-to-br from-black via-cyan-700 to-pink-200 flex min-h-screen">
         <div class="flex w-screen rounded-md overflow-hidden">
             <!-- Sidebar Pane -->
-            <div ref="sidebar" class="sidebar text-cyan-200 bg-gray-900 bg-opacity-95 absolute rounded-md overflow-hidden"
+            <div ref="sidebar" class="sidebar text-cyan-200 bg-gray-900 absolute rounded-md overflow-hidden"
                 :class="{ open: sidebarOpen }">
                 <div class="flex h-[64px]">
                     <div class="flex-row p-5" @click="toggleSidebar">
