@@ -2,7 +2,7 @@
 
 type TMenuItem = {
     name: string,
-    icon: string, 
+    icon: string,
     route: string,
 }
 
@@ -12,21 +12,20 @@ const router = useRouter();
 const menuItems: TMenuItem[] = [
     {
         name: "Profile",
-        icon: "M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z",
+        icon: "M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z",
         route: "/profile"
     },
     {
         name: "Preps",
-        icon: "M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z",
-        route: "/profile"
+        icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25",
+        route: "/preps"
     },
     {
         name: "Settings",
-        icon: "M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z",
+        icon: "M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5",
         route: "/settings"
     }
 ];
-
 
 const sidebarOpen = ref(false);
 const sidebar = ref<HTMLDivElement>();
@@ -41,10 +40,16 @@ function toggleSidebar() {
 }
 </script>
 <template>
+    <div 
+    v-if="sidebarOpen" 
+    ref="overlay" 
+    class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-500 opacity-75"
+    @click="toggleSidebar"
+    ></div>
     <div class="bg-gradient-to-br from-black via-cyan-700 to-pink-200 flex min-h-screen">
         <div class="flex w-screen rounded-md overflow-hidden">
             <!-- Sidebar Pane -->
-            <div ref="sidebar" class="sidebar text-cyan-200 bg-gray-900 absolute rounded-md overflow-hidden"
+            <div ref="sidebar" class="sidebar text-cyan-200 bg-gray-900 absolute rounded-md overflow-hidden z-50"
                 :class="{ open: sidebarOpen }">
                 <div class="flex h-[64px]">
                     <div class="flex-row p-5" @click="toggleSidebar">
@@ -61,10 +66,9 @@ function toggleSidebar() {
                         class="flex p-2 rounded-md hover:text-gray-500 hover:bg-cyan-200 transition duration-200 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                :d="menuItem.icon" />
+                            <path stroke-linecap="round" stroke-linejoin="round" :d="menuItem.icon" />
                         </svg><span class="ml-4">{{ menuItem.name }}</span>
-                        
+
 
                     </div>
                 </div>
