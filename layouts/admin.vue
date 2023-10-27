@@ -43,7 +43,7 @@ function toggleSidebar() {
     <div 
     v-if="sidebarOpen" 
     ref="overlay" 
-    class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-500 opacity-75"
+    class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"
     @click="toggleSidebar"
     ></div>
     <div class="bg-gradient-to-br from-black via-cyan-700 to-pink-200 flex min-h-screen">
@@ -54,7 +54,7 @@ function toggleSidebar() {
                 <div class="flex h-[64px]">
                     <div class="flex-row p-5" @click="toggleSidebar">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6 cursor-pointer">
+                            stroke="currentColor" class="p-1 w-8 h-8 cursor-pointer hover:bg-cyan-900 rounded-full">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </div>
@@ -63,7 +63,7 @@ function toggleSidebar() {
                 <!-- Menu Items -->
                 <div class="p-3 m-3 space-y-5">
                     <div v-for="menuItem in menuItems"
-                        class="flex p-2 rounded-md hover:text-gray-500 hover:bg-cyan-200 transition duration-200 cursor-pointer">
+                        class="flex p-2 rounded-md hover:bg-cyan-900 transition duration-200 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" :d="menuItem.icon" />
@@ -79,7 +79,7 @@ function toggleSidebar() {
                 <div class="flex h-[64px] text-cyan-200">
                     <div class="flex-row p-5" @click="toggleSidebar">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6 cursor-pointer">
+                            stroke="currentColor" class="p-1 w-8 h-8 cursor-pointer hover:bg-cyan-900 rounded-full">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
