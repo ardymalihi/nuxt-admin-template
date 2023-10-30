@@ -10,6 +10,7 @@ definePageMeta({
     <div class="container mx-auto">
         <Table :config="{
             tableName: 'tasks',
+            editable: true,
             columns: [
                 {
                     fieldName: 'id',
