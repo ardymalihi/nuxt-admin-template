@@ -1,7 +1,10 @@
 <script setup lang="ts">
-export type IColumnConfig = {
-    fieldName: string,
-    title: string,
+type CustomFormatHandler = (row: any, column: IColumnConfig) => string
+export interface IColumnConfig  {
+    fieldName: string;
+    title: string;
+    type: "boolean" | "string" | "number";
+    customFormat?: CustomFormatHandler;
 }
 export interface ITableConfig {
     tableName: string;
@@ -11,6 +14,17 @@ export interface ITableConfig {
 const props = defineProps<{
     config: ITableConfig
 }>();
+
+function formatValue(row: any, column: IColumnConfig): string {
+    if (column.customFormat) {
+        return column.customFormat(row, column);
+    }
+    let value = row[column.fieldName];
+    if (column.type === "boolean") {
+        value = value ? "YES" : "NO";
+    }
+    return `<span>${value}</span>`;
+}
 
 const client = useSupabaseClient();
 
@@ -37,8 +51,8 @@ const { data: rows, error } = await client.from(props.config.tableName).select(p
         </thead>
         <tbody class="bg-white">
             <tr v-for="row in rows" class="border hover:bg-gray-100 h-[50px]">
-                <td v-for="column in props.config.columns" class="p-2">{{ (row as any)[column.fieldName] }}</td>
-                <td class="p-2">
+                <td v-for="column in props.config.columns" class="p-2" ><div v-html="formatValue(row, column)"></div></td>
+                <td v-if="props.config.editable" class="p-2">
                     <button
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -48,7 +62,7 @@ const { data: rows, error } = await client.from(props.config.tableName).select(p
                         </svg>
                     </button>
                 </td>
-                <td class="p-2">
+                <td v-if="props.config.editable" class="p-2">
                     <button
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

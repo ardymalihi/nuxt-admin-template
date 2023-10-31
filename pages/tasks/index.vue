@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { IColumnConfig } from '~/components/Table.vue';
+
 definePageMeta({
     layout: "admin",
     middleware: [
@@ -15,14 +17,24 @@ definePageMeta({
                 {
                     fieldName: 'id',
                     title: 'ID',
+                    type: 'number',
+                    customFormat: (row, column) => {
+                        const value = row[column.fieldName];
+                        if (value > 2) {
+                            return `<span class='text-red-500'>${value}</span>`
+                        }
+                        return value
+                    },
                 },
                 {
                     fieldName: 'title',
                     title: 'Title',
+                    type: 'string',
                 },
                 {
                     fieldName: 'completed',
-                    title: 'Completed'
+                    title: 'Completed',
+                    type: 'boolean',
                 }
             ]
         }" />
