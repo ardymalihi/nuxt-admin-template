@@ -17,7 +17,7 @@ definePageMeta({
                 {
                     fieldName: 'id',
                     title: 'ID',
-                    type: 'number',
+                    type: 'id',
                     customFormat: (row, column) => {
                         const value = row[column.fieldName];
                         if (value > 2) {
