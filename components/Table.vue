@@ -1,19 +1,8 @@
 <script setup lang="ts">
 import CrudSidebar from '~/components/CrudSidebar.vue';
-type CustomFormatHandler = (row: any, column: IColumnConfig) => string
-export interface IColumnConfig {
-    fieldName: string;
-    title: string;
-    type: "id" | "boolean" | "string" | "number";
-    customFormat?: CustomFormatHandler;
-}
-export interface ITableConfig {
-    tableName: string;
-    editable: boolean;
-    columns: IColumnConfig[] | null,
-}
+import { IColumnConfig, TableNames, app } from '~/assets/js/app';
 const props = defineProps<{
-    config: ITableConfig
+    tableName: TableNames
 }>();
 
 function formatValue(row: any, column: IColumnConfig): string {
@@ -42,7 +31,7 @@ function closeDeleteModal() {
 }
 
 async function  deleteRecord() {
-    const { error } = await client.from(props.config.tableName).delete().match({ [`${filedIdName}`]: currentId.value});
+    const { error } = await client.from(props.tableName).delete().match({ [`${filedIdName}`]: currentId.value});
     if (!error) {
         await load();
     }
@@ -50,9 +39,9 @@ async function  deleteRecord() {
 }
 
 async function load() {
-    console.log("columns:", props.config.columns?.map(c => c.fieldName).join(","));
+    console.log("columns:", app.table[props.tableName].columns?.map(c => c.fieldName).join(","));
     console.log("field id name:", filedIdName);
-    const { data, error } = await client.from(props.config.tableName).select(props.config.columns?.map(c => c.fieldName).join(","));
+    const { data, error } = await client.from(props.tableName).select(app.table[props.tableName].columns?.map(c => c.fieldName).join(","));
     rows.value = data as any[];
 }
 
@@ -61,7 +50,7 @@ const overlayOpen = ref(false);
 const deleteModal = ref(false);
 const currentId = ref<string>();
 const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null)
-const filedIdName = props.config.columns?.find(c=> c.type === "id")?.fieldName ?? "id";
+const filedIdName = app.table[props.tableName].columns?.find(c=> c.type === "id")?.fieldName ?? "id";
 
 function toggleCrudSidebar() {
     crudSidebar.value?.toggleSidebar();
@@ -108,10 +97,10 @@ await load();
     <table class="table-fixed w-[100%] shadow-md rounded-md overflow-hidden">
         <thead class="bg-cyan-500 h-[60px]">
             <tr class="text-left text-white">
-                <th v-for="column in props.config.columns" class="p-2">{{ column.title }}</th>
-                <th v-if="props.config.editable" class="p-2 w-[58px]">
+                <th v-for="column in app.table[props.tableName].columns" class="p-2">{{ column.title }}</th>
+                <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
                 </th>
-                <th v-if="props.config.editable" class="p-2 w-[58px]">
+                <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
                     <button
                         class="w-full focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -124,10 +113,10 @@ await load();
         </thead>
         <tbody class="bg-white">
             <tr v-for="row in rows" class="border hover:bg-gray-100 h-[50px]">
-                <td v-for="column in props.config.columns" class="p-2">
+                <td v-for="column in app.table[props.tableName].columns" class="p-2">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
-                <td v-if="props.config.editable" class="p-2">
+                <td v-if="app.table[props.tableName].editable" class="p-2">
                     <button @click="openDeleteModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -137,7 +126,7 @@ await load();
                         </svg>
                     </button>
                 </td>
-                <td v-if="props.config.editable" class="p-2">
+                <td v-if="app.table[props.tableName].editable" class="p-2">
                     <button @click="toggleCrudSidebar"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

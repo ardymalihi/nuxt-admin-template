@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { app } from '~/assets/js/app'
 
 const sidebarOpen = ref(false);
 const sidebar = ref<HTMLDivElement>();
