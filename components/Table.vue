@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CrudSidebar from '~/components/CrudSidebar.vue';
 type CustomFormatHandler = (row: any, column: IColumnConfig) => string
 export interface IColumnConfig {
     fieldName: string;
@@ -40,8 +41,8 @@ function closeDeleteModal() {
     deleteModal.value = false;
 }
 
-async function  deleteRecord(id: number) {
-    const { error } = await client.from(props.config.tableName).delete().match({ [`${filedIdName}`]: id});
+async function  deleteRecord() {
+    const { error } = await client.from(props.config.tableName).delete().match({ [`${filedIdName}`]: currentId.value});
     if (!error) {
         await load();
     }
@@ -59,13 +60,21 @@ const rows = ref<any[]>([]);
 const overlayOpen = ref(false);
 const deleteModal = ref(false);
 const currentId = ref<string>();
+const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null)
 const filedIdName = props.config.columns?.find(c=> c.type === "id")?.fieldName ?? "id";
+
+function toggleCrudSidebar() {
+    crudSidebar.value?.toggleSidebar();
+}
 
 const client = useSupabaseClient();
 
 await load();
 </script>
 <template>
+    <CrudSidebar ref="crudSidebar">
+        <p>this is a test</p>
+    </CrudSidebar>
     <!-- Overlay -->
     <div v-if="overlayOpen" ref="overlay"
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"
@@ -91,7 +100,7 @@ await load();
           </div>
         </div>
         <div class="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto" @click="deleteRecord(currentId)">Delete</button>
+          <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto" @click="deleteRecord">Delete</button>
           <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" @click="closeDeleteModal">Cancel</button>
         </div>
       </div>
@@ -129,7 +138,7 @@ await load();
                     </button>
                 </td>
                 <td v-if="props.config.editable" class="p-2">
-                    <button
+                    <button @click="toggleCrudSidebar"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">

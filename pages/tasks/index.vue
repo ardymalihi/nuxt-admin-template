@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { IColumnConfig } from '~/components/Table.vue';
-
 definePageMeta({
     layout: "admin",
     middleware: [
