@@ -1,10 +1,18 @@
-type CustomFormatHandler = (row: any, column: IColumnConfig) => string;
+type CustomFormatHandler = (row: any, column: IColumnConfig, value: any) => string;
 
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number";
-    customFormat?: CustomFormatHandler;
+    type: "id" | "boolean" | "string" | "number" | "lookup";
+    lookup?: {
+        sourceType: "table";
+        name: string;
+        idFieldName: string;
+        displayFieldName: string;
+    }
+    editable?: boolean;
+    priority?: number;
+    customFormatter?: CustomFormatHandler;
 }
 
 export interface ITableConfig {
@@ -31,6 +39,17 @@ export const app: IAppConfig = {
                     fieldName: "id",
                     title: "ID",
                     type: "id",
+                },
+                {
+                    fieldName: "user_id",
+                    title: "User",
+                    type: "lookup",
+                    lookup: {
+                        sourceType: "table",
+                        name: "profiles",
+                        idFieldName: "id",
+                        displayFieldName: "first_name",
+                    }
                 },
                 {
                     fieldName: "title",
