@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import CrudSidebar from '~/components/CrudSidebar.vue';
 import { IColumnConfig, TableNames, app } from '~/assets/js/app';
-import { useAuthStore } from '~/stores/AuthStore';
 const props = defineProps<{
     tableName: TableNames
 }>();
-
-const authStore = useAuthStore();
-const users = await authStore.getAllUsers();
-console.log("users:", users);
 
 function formatValue(row: any, column: IColumnConfig): string {
     let value = row[column.fieldName];
@@ -113,7 +108,7 @@ await load();
         class="flex justify-center items-center fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10"
         @click="closeOverlay">
         <div
-            class="bg-white relative transform overflow-hidden rounded-lg  text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            class="bg-white relative transform overflow-hidden rounded-lg border text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div class="px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div
