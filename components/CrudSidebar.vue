@@ -5,7 +5,6 @@
             :class="{ 'translate-x-full': !showSidebar }">
 
             <div class="flex flex-col h-[90%] overflow-y-auto">
-                <slot />
                 <form @submit.prevent="handleSubmit">
                     <div v-for="column in getColumns()">
                         <div>

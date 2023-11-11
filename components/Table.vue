@@ -128,9 +128,7 @@ function createEmptyRow(): any {
 await load();
 </script>
 <template>
-    <CrudSidebar ref="crudSidebar" :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow">
-        <p>this is a test</p>
-    </CrudSidebar>
+    <CrudSidebar ref="crudSidebar" :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow" />
     <!-- Overlay -->
     <div v-if="overlayOpen" ref="overlay"
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"
