@@ -124,20 +124,35 @@ function createEmptyRow(): any {
     return result;
 }
 
-function cleanObject(obj: any) {
-  for (var propName in obj) {
-    if (obj[propName] === null || obj[propName] === undefined || propName === filedIdName) {
-      delete obj[propName];
+function getInsertReadyObject(obj: any) {
+    const result = {...obj};
+  for (var propName in result) {
+    if (result[propName] === null || result[propName] === undefined || propName === filedIdName) {
+      delete result[propName];
     }
   }
+  return result;
+}
+
+function getUpdateReadyObject(obj: any) {
+    const result: any = {};
+    const columns = (app.table[props.tableName].columns ?? []);
+    for (const column of columns) {
+        result[column.fieldName] = obj[column.fieldName] ?? null;
+    }
+  return result;
 }
 
 async function handleSubmit({ model }: any) {
     if (crudSidebarEditMode.value) {
-
+        const updateObject = getUpdateReadyObject(model);
+        const { error, data } = await client.from(props.tableName).update(updateObject as never).eq(filedIdName, String(currentId.value)).select();
+        if (error) {
+            console.error(error);
+        }
     } else {
-        cleanObject(model);
-        const { error } = await client.from(props.tableName).insert(model);
+        const insertObject = getInsertReadyObject(model);
+        const { error } = await client.from(props.tableName).insert(insertObject);
         currentRow.value = createEmptyRow();
         currentId.value = undefined;
     }
