@@ -172,7 +172,7 @@ await load();
     <table class="table-fixed w-[100%] shadow-md rounded-md overflow-hidden">
         <thead class="bg-cyan-500 h-[60px]">
             <tr class="text-left text-white">
-                <th v-for="column in app.table[props.tableName].columns" class="p-2">{{ column.title }}</th>
+                <th v-for="column in app.table[props.tableName].columns?.sort((a,b) => (a.columnOrder ?? Number.MAX_VALUE) - (b.columnOrder ?? Number.MAX_VALUE))" class="p-2">{{ column.title }}</th>
                 <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
                 </th>
                 <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
@@ -190,7 +190,7 @@ await load();
         </thead>
         <tbody class="bg-white">
             <tr v-for="row in rows" class="border hover:bg-stone-50 h-[50px]">
-                <td v-for="column in app.table[props.tableName].columns" class="p-2">
+                <td v-for="column in app.table[props.tableName].columns?.sort((a,b) => (a.columnOrder ?? Number.MAX_VALUE) - (b.columnOrder ?? Number.MAX_VALUE))" class="p-2">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
                 <td v-if="app.table[props.tableName].editable" class="p-2">

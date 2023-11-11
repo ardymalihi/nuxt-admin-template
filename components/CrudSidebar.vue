@@ -7,7 +7,7 @@
             <div class="flex flex-col h-[90%] overflow-y-auto">
                 <slot />
                 <form @submit.prevent="handleSubmit">
-                    <div v-for="column in app.table[props.tableName].columns">
+                    <div v-for="column in getColumns()">
                         <div>
                             <label class="p-1 text-xs" :for="column.fieldName">{{ column.title }}</label>
                             <div v-if="column.type === 'string'">
@@ -49,6 +49,9 @@ const client = useSupabaseClient();
 const showSidebar = ref(false);
 const lookups: any = ref({});
 
+function getColumns(): IColumnConfig[] {
+    return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a,b) => (a.formOrder ?? Number.MAX_VALUE) - (b.formOrder ?? Number.MAX_VALUE)) ?? [];
+}
 
 const toggleSidebar = () => {
     showSidebar.value = !showSidebar.value;

@@ -5,6 +5,8 @@ export interface IColumnConfig {
     title: string;
     type: "id" | "boolean" | "string" | "number" | "lookup";
     defaultValue?: any;
+    columnOrder?: number;
+    formOrder?: number;
     lookup?: {
         sourceType: "table";
         name: string;
@@ -40,6 +42,7 @@ export const app: IAppConfig = {
                     fieldName: "id",
                     title: "ID",
                     type: "id",
+                    columnOrder: 0,
                 },
                 {
                     fieldName: "user_id",
@@ -50,19 +53,22 @@ export const app: IAppConfig = {
                         name: "profiles",
                         idFieldName: "id",
                         displayFieldName: "first_name,last_name",
-                    }
+                    },
+                    formOrder: 3,
                 },
                 {
                     fieldName: "title",
                     title: "Title",
                     type: "string",
-                    defaultValue: "Hi There!"
+                    defaultValue: "Hi There!",
+                    formOrder: 1,
                 },
                 {
                     fieldName: "completed",
                     title: "Completed",
                     type: "boolean",
                     defaultValue: true,
+                    formOrder: 2,
                 }
             ]
         }
