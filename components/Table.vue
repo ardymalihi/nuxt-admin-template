@@ -96,7 +96,7 @@ function getSelectFields(): string {
 async function load() {
     console.log("columns:", getSelectFields());
     console.log("field id name:", filedIdName);
-    const { data, error } = await client.from(props.tableName).select(getSelectFields());
+    const { data, error } = await client.from(props.tableName).select(getSelectFields()).order(filedIdName, { ascending: true });
     console.log("data:", data);
     rows.value = data as any[];
 }
@@ -223,7 +223,7 @@ await load();
         </thead>
         <tbody class="bg-white">
             <tr v-for="row in rows" class="border hover:bg-stone-50 h-[50px]">
-                <td v-for="column in app.table[props.tableName].columns?.sort((a,b) => (a.columnOrder ?? Number.MAX_VALUE) - (b.columnOrder ?? Number.MAX_VALUE))" class="p-2">
+                <td v-for="(column, index) in app.table[props.tableName].columns?.sort((a,b) => (a.columnOrder ?? Number.MAX_VALUE) - (b.columnOrder ?? Number.MAX_VALUE))" class="p-2" :key="index">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
                 <td v-if="app.table[props.tableName].editable" class="p-2">

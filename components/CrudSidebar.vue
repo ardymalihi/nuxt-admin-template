@@ -9,18 +9,19 @@
                     <div v-for="column in getColumns()">
                         <div>
                             <label class="p-1 text-xs" :for="column.fieldName">{{ column.title }}</label>
-                            <div v-if="column.type === 'string'">
-                                <input v-model="props.model[column.fieldName]"
-                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
-                                    :id="column.fieldName" type="text" :placeholder="column.title" />
-                            </div>
-                            <div v-else-if="column.type === 'lookup'">
+                            <div v-if="column.type === 'lookup'">
                                 <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
                                     v-model="props.model[column.fieldName]">
                                     <option v-for="(item, index) in lookups[column.lookup?.name ?? '']" :value="item.key" :key="index"><label>{{ item.value
                                     }}</label></option>
                                 </select>
                             </div>
+                            <div v-else="column.type === 'string'">
+                                <input v-model="props.model[column.fieldName]"
+                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                    :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                            </div>
+                            
                         </div>
                     </div>
                 </form>
@@ -63,6 +64,13 @@ function getColumns(): IColumnConfig[] {
 const toggleSidebar = () => {
     showSidebar.value = !showSidebar.value;
 };
+
+function getInputType(column: IColumnConfig): string {
+    if (column.type === "boolean") {
+        return "checkbox";
+    }
+    return "text";
+}
 
 async function handleSubmit() {
     console.log("submitted form", JSON.stringify(props.model));
