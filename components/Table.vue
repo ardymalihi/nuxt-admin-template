@@ -108,7 +108,7 @@ await load();
         class="flex justify-center items-center fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10"
         @click="closeOverlay">
         <div
-            class="bg-white relative transform overflow-hidden rounded-lg border text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            class="bg-stone-50 relative transform overflow-hidden rounded-lg border text-left shadow-xl shadow-black transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div class="px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div
@@ -129,7 +129,7 @@ await load();
             </div>
             <div class="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button"
-                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    class="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 sm:ml-3 sm:w-auto"
                     @click="deleteRecord">Delete</button>
                 <button type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
@@ -155,13 +155,13 @@ await load();
             </tr>
         </thead>
         <tbody class="bg-white">
-            <tr v-for="row in rows" class="border hover:bg-gray-100 h-[50px]">
+            <tr v-for="row in rows" class="border hover:bg-stone-50 h-[50px]">
                 <td v-for="column in app.table[props.tableName].columns" class="p-2">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
                 <td v-if="app.table[props.tableName].editable" class="p-2">
                     <button @click="openDeleteModal(String((row as any)[filedIdName]))"
-                        class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
+                        class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -171,7 +171,7 @@ await load();
                 </td>
                 <td v-if="app.table[props.tableName].editable" class="p-2">
                     <button @click="toggleCrudSidebar"
-                        class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
+                        class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
