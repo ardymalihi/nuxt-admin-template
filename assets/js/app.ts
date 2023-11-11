@@ -4,6 +4,7 @@ export interface IColumnConfig {
     fieldName: string;
     title: string;
     type: "id" | "boolean" | "string" | "number" | "lookup";
+    defaultValue?: any;
     lookup?: {
         sourceType: "table";
         name: string;
@@ -48,18 +49,20 @@ export const app: IAppConfig = {
                         sourceType: "table",
                         name: "profiles",
                         idFieldName: "id",
-                        displayFieldName: "first_name",
+                        displayFieldName: "first_name,last_name",
                     }
                 },
                 {
                     fieldName: "title",
                     title: "Title",
                     type: "string",
+                    defaultValue: "Hi There!"
                 },
                 {
                     fieldName: "completed",
                     title: "Completed",
                     type: "boolean",
+                    defaultValue: true,
                 }
             ]
         }

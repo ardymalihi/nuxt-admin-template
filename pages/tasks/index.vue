@@ -8,6 +8,6 @@ definePageMeta({
 </script>
 <template>
     <div class="container mx-auto">
-        <Table tableName="tasks" />
+        <Table table-name="tasks" />
     </div>
 </template>

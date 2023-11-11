@@ -1,14 +1,31 @@
 <script setup lang="ts">
 import CrudSidebar from '~/components/CrudSidebar.vue';
 import { IColumnConfig, TableNames, app } from '~/assets/js/app';
+
 const props = defineProps<{
     tableName: TableNames
 }>();
 
+const rows = ref<any[]>([]);
+const overlayOpen = ref(false);
+const deleteModal = ref(false);
+const crudSidebarEditMode  = ref(true);
+const currentId = ref<string>();
+const currentRow = ref<any>(createEmptyRow());
+const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null)
+const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
+
+const client = useSupabaseClient();
+
 function formatValue(row: any, column: IColumnConfig): string {
     let value = row[column.fieldName];
     if (column.type === "lookup" && column.lookup) {
-        value = row[column.lookup.name][column.lookup.displayFieldName]
+        const fieldNames = column.lookup.displayFieldName.split(",");
+        const values: string[] = [];
+        for (const fieldName of fieldNames) {
+            values.push(String(row[column.lookup.name][fieldName.trim()]))
+        }
+        value = values.join(" ");
     }
     else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
@@ -23,6 +40,8 @@ function formatValue(row: any, column: IColumnConfig): string {
 function openDeleteModal(id: string) {
     console.log("deleting:", id);
     currentId.value = id;
+    const found = rows.value.find(r => String(r[filedIdName]) === String(id));
+    currentRow.value = { ...createEmptyRow(), ...found };
     deleteModal.value = true;
 }
 
@@ -39,6 +58,8 @@ async function deleteRecord() {
     if (!error) {
         await load();
     }
+    currentId.value = undefined;
+    currentRow.value = createEmptyRow();
     deleteModal.value = false;
 }
 
@@ -53,7 +74,7 @@ function getSelectFields(): string {
             fieldNames: string[];
         }[] = [];
         const lookupColumns = columns.filter(c => c.type === 'lookup');
-        lookupColumns.forEach(lc => {
+        for (const lc of lookupColumns) {
             const foundLookup = lookups.find(l => l.tableName === lc.lookup?.name);
             if (!foundLookup) {
                 lookups.push({
@@ -66,7 +87,7 @@ function getSelectFields(): string {
             selectedLookups = lookups.map(l => 
                 l.tableName + "(" + l.fieldNames.join(",") + ")"
             ).join(",")
-        });
+        }
         selectedFields = selectedFields + (selectedLookups ? `, ${selectedLookups}` : "");
     }
     return selectedFields;
@@ -80,23 +101,33 @@ async function load() {
     rows.value = data as any[];
 }
 
-const rows = ref<any[]>([]);
-const overlayOpen = ref(false);
-const deleteModal = ref(false);
-const currentId = ref<string>();
-const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null)
-const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
-
-function toggleCrudSidebar() {
+function showInsertModal() {
+    crudSidebarEditMode.value = false;
+    currentId.value = undefined;
+    currentRow.value = createEmptyRow();
     crudSidebar.value?.toggleSidebar();
 }
 
-const client = useSupabaseClient();
+function showEditModal(id: string)  {
+    crudSidebarEditMode.value = true;
+    currentId.value = id;
+    const found = rows.value.find(r => String(r[filedIdName]) === String(id));
+    currentRow.value = { ...createEmptyRow(), ...found };
+    crudSidebar.value?.toggleSidebar();
+}
+
+function createEmptyRow(): any {
+    const result: any = {};
+    for(let c of app.table[props.tableName].columns ?? ([] as IColumnConfig[])) {
+        result[c.fieldName] = c.defaultValue ?? null;
+    }
+    return result;
+}
 
 await load();
 </script>
 <template>
-    <CrudSidebar ref="crudSidebar">
+    <CrudSidebar ref="crudSidebar" :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow">
         <p>this is a test</p>
     </CrudSidebar>
     <!-- Overlay -->
@@ -144,7 +175,9 @@ await load();
                 <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
                 </th>
                 <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
+                    <!-- Insert Button-->
                     <button
+                        @click="showInsertModal"
                         class="w-full focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
@@ -160,6 +193,7 @@ await load();
                     <div v-html="formatValue(row, column)"></div>
                 </td>
                 <td v-if="app.table[props.tableName].editable" class="p-2">
+                    <!-- Delete Button-->
                     <button @click="openDeleteModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -170,7 +204,8 @@ await load();
                     </button>
                 </td>
                 <td v-if="app.table[props.tableName].editable" class="p-2">
-                    <button @click="toggleCrudSidebar"
+                    <!-- Edit Button-->
+                    <button @click="showEditModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">
