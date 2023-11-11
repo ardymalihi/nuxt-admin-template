@@ -124,11 +124,31 @@ function createEmptyRow(): any {
     return result;
 }
 
+function cleanObject(obj: any) {
+  for (var propName in obj) {
+    if (obj[propName] === null || obj[propName] === undefined || propName === filedIdName) {
+      delete obj[propName];
+    }
+  }
+}
+
+async function handleSubmit({ model }: any) {
+    if (crudSidebarEditMode.value) {
+
+    } else {
+        cleanObject(model);
+        const { error } = await client.from(props.tableName).insert(model);
+        currentRow.value = createEmptyRow();
+        currentId.value = undefined;
+    }
+    await load();
+}
+
 
 await load();
 </script>
 <template>
-    <CrudSidebar ref="crudSidebar" :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow" />
+    <CrudSidebar ref="crudSidebar" :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow" @form-submitted="handleSubmit" />
     <!-- Overlay -->
     <div v-if="overlayOpen" ref="overlay"
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"

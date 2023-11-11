@@ -43,6 +43,14 @@ interface ILookupItem {
 }
 import { IColumnConfig, TableNames, app } from '~/assets/js/app';
 
+const props = defineProps<{
+    tableName: TableNames,
+    editMode: boolean,
+    model: any
+}>();
+
+const emit = defineEmits(['formSubmitted'])
+
 const client = useSupabaseClient();
 
 const showSidebar = ref(false);
@@ -56,8 +64,10 @@ const toggleSidebar = () => {
     showSidebar.value = !showSidebar.value;
 };
 
-function handleSubmit() {
-    alert(JSON.stringify(props.model));
+async function handleSubmit() {
+    console.log("submitted form", JSON.stringify(props.model));
+    emit("formSubmitted", { model: props.model} );
+    showSidebar.value = false;
 }
 
 async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
@@ -78,18 +88,6 @@ async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
     return result;
 }
 
-
-defineExpose({
-    toggleSidebar
-});
-
-const props = defineProps<{
-    tableName: TableNames,
-    editMode: boolean,
-    model: any
-}>();
-
-
 async function load() {
     const lookupColumns = app.table[props.tableName].columns?.filter(c => c.type === "lookup");
     if (lookupColumns) {
@@ -99,6 +97,11 @@ async function load() {
         }
     }
 }
+
+defineExpose({
+    toggleSidebar
+});
+
 
 onMounted(async () => {
     await load();
