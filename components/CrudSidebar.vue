@@ -65,6 +65,7 @@ function checkFormValidation() {
 }
 
 async function handleSubmit() {
+    checkFormValidation();
     if (!invalid.value) {
         if (app.table[props.tableName].validation) {
             const formValidationMessage = await app.table[props.tableName].validation?.(props.model);

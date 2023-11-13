@@ -65,7 +65,7 @@ export const app: IAppConfig = {
                         displayFieldName: "first_name,last_name",
                     },
                     formOrder: 3,
-                    required: false,
+                    required: true,
                 },
                 {
                     fieldName: "title",
