@@ -3,10 +3,11 @@ type CustomFormatHandler = (row: any, column: IColumnConfig, value: any) => stri
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number" | "lookup";
+    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo";
     defaultValue?: any;
     columnOrder?: number;
     formOrder?: number;
+    required: boolean;
     lookup?: {
         sourceType: "table";
         name: string;
@@ -43,6 +44,7 @@ export const app: IAppConfig = {
                     title: "ID",
                     type: "id",
                     columnOrder: 0,
+                    required: false,
                 },
                 {
                     fieldName: "user_id",
@@ -55,6 +57,7 @@ export const app: IAppConfig = {
                         displayFieldName: "first_name,last_name",
                     },
                     formOrder: 3,
+                    required: false,
                 },
                 {
                     fieldName: "title",
@@ -62,6 +65,7 @@ export const app: IAppConfig = {
                     type: "string",
                     defaultValue: "Hi There!",
                     formOrder: 1,
+                    required: true,
                 },
                 {
                     fieldName: "completed",
@@ -69,6 +73,14 @@ export const app: IAppConfig = {
                     type: "boolean",
                     defaultValue: true,
                     formOrder: 2,
+                    required: true,
+                },
+                {
+                    fieldName: "description",
+                    title: "Description",
+                    type: "memo",
+                    formOrder: 4,
+                    required: false,
                 }
             ]
         }

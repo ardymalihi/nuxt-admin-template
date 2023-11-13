@@ -12,18 +12,20 @@ const deleteModal = ref(false);
 const crudSidebarEditMode  = ref(true);
 const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
-const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null)
+const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null);
 const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
 
 const client = useSupabaseClient();
 
 function formatValue(row: any, column: IColumnConfig): string {
-    let value = row[column.fieldName];
+    let value = row[column.fieldName] ?? "";
     if (column.type === "lookup" && column.lookup) {
         const fieldNames = column.lookup.displayFieldName.split(",");
         const values: string[] = [];
         for (const fieldName of fieldNames) {
-            values.push(String(row[column.lookup.name][fieldName.trim()]))
+            if (row[column.lookup.name]) {
+                values.push(String(row[column.lookup.name][fieldName.trim()]) ?? "")
+            }
         }
         value = values.join(" ");
     }
@@ -105,7 +107,7 @@ function showInsertModal() {
     crudSidebarEditMode.value = false;
     currentId.value = undefined;
     currentRow.value = createEmptyRow();
-    crudSidebar.value?.toggleSidebar();
+    crudSidebar.value?.openSidebar();
 }
 
 function showEditModal(id: string)  {
@@ -113,7 +115,7 @@ function showEditModal(id: string)  {
     currentId.value = id;
     const found = rows.value.find(r => String(r[filedIdName]) === String(id));
     currentRow.value = { ...createEmptyRow(), ...found };
-    crudSidebar.value?.toggleSidebar();
+    crudSidebar.value?.openSidebar();
 }
 
 function createEmptyRow(): any {
@@ -156,6 +158,7 @@ async function handleSubmit({ model }: any) {
         currentRow.value = createEmptyRow();
         currentId.value = undefined;
     }
+    crudSidebar.value?.closeSidebar();
     await load();
 }
 

@@ -1,42 +1,3 @@
-<template>
-    <div class="flex">
-        <!-- Right Sidebar (Initially Hidden) -->
-        <div class="w-[400px] bg-stone-50 rounded-tl-md rounded-bl-md border border-gray-200 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
-            :class="{ 'translate-x-full': !showSidebar }">
-
-            <div class="flex flex-col h-[90%] overflow-y-auto">
-                <form @submit.prevent="handleSubmit">
-                    <div v-for="column in getColumns()">
-                        <div>
-                            <label class="p-1 text-xs" :for="column.fieldName">{{ column.title }}</label>
-                            <div v-if="column.type === 'lookup'">
-                                <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
-                                    v-model="props.model[column.fieldName]">
-                                    <option v-for="(item, index) in lookups[column.lookup?.name ?? '']" :value="item.key" :key="index"><label>{{ item.value
-                                    }}</label></option>
-                                </select>
-                            </div>
-                            <div v-else="column.type === 'string'">
-                                <input v-model="props.model[column.fieldName]"
-                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
-                                    :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
-                            </div>
-                            
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="flex mt-auto justify-center">
-                <button @click="handleSubmit"
-                    class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Submit</button>
-                <button @click="toggleSidebar"
-                    class="m-1 p-2 focus:shadow-outline rounded bg-red-500 px-2 py-2 text-white hover:bg-red-600 focus:outline-none">Close</button>
-            </div>
-            <!-- Sidebar content goes here -->
-        </div>
-    </div>
-</template>
-  
 <script setup lang="ts">
 interface ILookupItem {
     key: string;
@@ -56,13 +17,17 @@ const client = useSupabaseClient();
 
 const showSidebar = ref(false);
 const lookups: any = ref({});
+const invalid = ref(false);
+const validationModel: any = ref({});
 
 function getColumns(): IColumnConfig[] {
     return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a,b) => (a.formOrder ?? Number.MAX_VALUE) - (b.formOrder ?? Number.MAX_VALUE)) ?? [];
 }
 
-const toggleSidebar = () => {
-    showSidebar.value = !showSidebar.value;
+const openSidebar = () => {
+    invalid.value = false;
+    validationModel.value = {};
+    showSidebar.value = true;
 };
 
 function getInputType(column: IColumnConfig): string {
@@ -72,14 +37,28 @@ function getInputType(column: IColumnConfig): string {
     return "text";
 }
 
-async function handleSubmit() {
-    console.log("submitted form", JSON.stringify(props.model));
-    emit("formSubmitted", { model: props.model} );
+function closeSidebar() {
     showSidebar.value = false;
 }
 
+function checkFormValidation(): boolean {
+    let result = false;
+    validationModel.value = {
+        title: "Title is required."
+    }
+    return result;
+}
+
+async function handleSubmit() {
+    console.log("submitted form", JSON.stringify(props.model));
+    invalid.value = !checkFormValidation();
+    if (!invalid.value) {
+    emit("formSubmitted", { model: props.model} );
+    }
+}
+
 async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
-    const result: ILookupItem[] = [];
+    let result: ILookupItem[] = [];
     const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
     const { data, error } = await client.from(column.lookup?.name ?? "").select(`${filedIdName}, ${column.lookup?.displayFieldName}`);
     const fieldNames = column.lookup?.displayFieldName.split(",");
@@ -92,6 +71,13 @@ async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
             key: row[filedIdName],
             value: values.join(" ")
         });
+    }
+    if (!column.required) {
+        result = [{
+            key: "",
+            value: null,
+        },
+        ...result]
     }
     return result;
 }
@@ -107,7 +93,8 @@ async function load() {
 }
 
 defineExpose({
-    toggleSidebar
+    openSidebar,
+    closeSidebar,
 });
 
 
@@ -116,4 +103,48 @@ onMounted(async () => {
    });
 
 </script>
-  
+
+<template>
+    <div class="flex">
+        <!-- Right Sidebar (Initially Hidden) -->
+        <div class="w-[400px] bg-stone-50 rounded-tl-md rounded-bl-md border border-gray-200 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
+            :class="{ 'translate-x-full': !showSidebar }">
+
+            <div class="flex flex-col h-[90%] overflow-y-auto">
+                <form @submit.prevent="handleSubmit">
+                    <div v-for="column in getColumns()">
+                        <div class="p-2" :class="((invalid === true) && validationModel[column.fieldName] !== undefined) ? 'bg-red-100' : ''">
+                            <label class="p-1 text-xs" :for="column.fieldName">{{ `${column.required ? '* ' : ''}${column.title}` }}</label>
+                            <div v-if="column.type === 'lookup'">
+                                <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                    v-model="props.model[column.fieldName]">
+                                    <option v-for="(item, index) in lookups[column.lookup?.name ?? '']" :value="item.key" :key="index"><label>{{ item.value
+                                    }}</label></option>
+                                </select>
+                            </div>
+                            <div v-else-if="column.type === 'memo'">
+                                <textarea cols="40" rows="5" v-model="props.model[column.fieldName]"
+                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                    :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                            </div>
+                            <div v-else="column.type === 'string'">
+                                <input v-model="props.model[column.fieldName]"
+                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                    :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                            </div>
+                            <span class="text-xs text-red-700 ml-1" v-if="(invalid === true) && validationModel[column.fieldName] !== undefined"> {{ String(validationModel[column.fieldName]) }}</span>
+                        
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="flex mt-auto justify-center">
+                <button @click="handleSubmit"
+                    class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Submit</button>
+                <button @click="closeSidebar"
+                    class="m-1 p-2 focus:shadow-outline rounded bg-red-500 px-2 py-2 text-white hover:bg-red-600 focus:outline-none">Close</button>
+            </div>
+            <!-- Sidebar content goes here -->
+        </div>
+    </div>
+</template>
