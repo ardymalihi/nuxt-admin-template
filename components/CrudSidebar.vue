@@ -22,7 +22,7 @@ const validationModel: any = ref({});
 const formValidationError = ref("");
 
 function getColumns(): IColumnConfig[] {
-    return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a, b) => (a.formOrder ?? Number.MAX_VALUE) - (b.formOrder ?? Number.MAX_VALUE)) ?? [];
+    return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a, b) => a.formOrder - b.formOrder) ?? [];
 }
 
 const openSidebar = () => {

@@ -6,8 +6,8 @@ export interface IColumnConfig {
     title: string;
     type: "id" | "boolean" | "string" | "number" | "lookup" | "memo";
     defaultValue?: any;
-    columnOrder?: number;
-    formOrder?: number;
+    columnOrder: number;
+    formOrder: number;
     required: boolean;
     lookup?: {
         sourceType: "table";
@@ -16,7 +16,6 @@ export interface IColumnConfig {
         displayFieldName: string;
     }
     editable?: boolean;
-    priority?: number;
     customFormatter?: CustomFormatHandler;
     validations?: ColumnValidationHandler[];
 }
@@ -51,8 +50,9 @@ export const app: IAppConfig = {
                     fieldName: "id",
                     title: "ID",
                     type: "id",
-                    columnOrder: 0,
+                    columnOrder: 1,
                     required: false,
+                    formOrder: 0,
                 },
                 {
                     fieldName: "user_id",
@@ -65,6 +65,7 @@ export const app: IAppConfig = {
                         displayFieldName: "first_name,last_name",
                     },
                     formOrder: 3,
+                    columnOrder: 2,
                     required: true,
                 },
                 {
@@ -73,6 +74,7 @@ export const app: IAppConfig = {
                     type: "string",
                     defaultValue: "Hi There!",
                     formOrder: 1,
+                    columnOrder: 3,
                     required: true,
                     validations: [
                         (row, column, value) => {
@@ -89,12 +91,14 @@ export const app: IAppConfig = {
                     defaultValue: true,
                     formOrder: 2,
                     required: true,
+                    columnOrder: 4,
                 },
                 {
                     fieldName: "description",
                     title: "Description",
                     type: "memo",
                     formOrder: 4,
+                    columnOrder: 5,
                     required: false,
                     validations: [
                         (row, column, value) => {
