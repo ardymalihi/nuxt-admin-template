@@ -165,9 +165,9 @@ async function handleSubmit({ model }: any) {
 function getColumnVisibility(column: IColumnConfig): string {
     let result = '';
     if (column.columnOrder >=3 &&  column.columnOrder <= 4) {
-        result = "hidden sm:table-cell";
+        result = "hidden md:table-cell";
     } else if (column.columnOrder > 4) {
-        result = "hidden md:table-cell lg:table-cell";
+        result = "hidden lg:table-cell";
     } 
     return result;
 }
