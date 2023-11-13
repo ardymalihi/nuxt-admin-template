@@ -3,7 +3,7 @@ interface ILookupItem {
     key: string;
     value: any;
 }
-import { IColumnConfig, TableNames, app } from '~/assets/js/app';
+import { IColumnConfig, ITableConfig, TableNames, app } from '~/assets/js/app';
 
 const props = defineProps<{
     tableName: TableNames,
@@ -19,9 +19,10 @@ const showSidebar = ref(false);
 const lookups: any = ref({});
 const invalid = ref(false);
 const validationModel: any = ref({});
+const formValidationError = ref("");
 
 function getColumns(): IColumnConfig[] {
-    return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a,b) => (a.formOrder ?? Number.MAX_VALUE) - (b.formOrder ?? Number.MAX_VALUE)) ?? [];
+    return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a, b) => (a.formOrder ?? Number.MAX_VALUE) - (b.formOrder ?? Number.MAX_VALUE)) ?? [];
 }
 
 const openSidebar = () => {
@@ -41,19 +42,40 @@ function closeSidebar() {
     showSidebar.value = false;
 }
 
-function checkFormValidation(): boolean {
-    let result = false;
-    validationModel.value = {
-        title: "Title is required."
+function checkFormValidation() {
+    validationModel.value = {};
+    let isValid = true;
+    for (const column of app.table[props.tableName].columns ?? []) {
+        if (column.required && String(props.model[column.fieldName] ?? "").length <= 0) {
+            validationModel.value[column.fieldName] = `${column.title} is required`;
+            isValid = false;
+        }
+        if (column.validations && props.model[column.fieldName]) {
+            for (const validation of column.validations) {
+                const validationResult = validation(props.model, column, props.model[column.fieldName]);
+                if (validationResult) {
+                    validationModel.value[column.fieldName] = validationResult;
+                    isValid = false;
+                }
+            }
+        }
     }
-    return result;
+    console.log("Validation Model:", validationModel.value);
+    invalid.value = !isValid;
 }
 
 async function handleSubmit() {
-    console.log("submitted form", JSON.stringify(props.model));
-    invalid.value = !checkFormValidation();
     if (!invalid.value) {
-    emit("formSubmitted", { model: props.model} );
+        if (app.table[props.tableName].validation) {
+            const formValidationMessage = await app.table[props.tableName].validation?.(props.model);
+            if (formValidationMessage) {
+                formValidationError.value = formValidationMessage;
+                setTimeout(() => formValidationError.value = "", 4000);
+            } else {
+                console.log("submitted form", JSON.stringify(props.model));
+                emit("formSubmitted", { model: props.model });
+            }
+        }
     }
 }
 
@@ -100,7 +122,7 @@ defineExpose({
 
 onMounted(async () => {
     await load();
-   });
+});
 
 </script>
 
@@ -112,14 +134,17 @@ onMounted(async () => {
 
             <div class="flex flex-col h-[90%] overflow-y-auto">
                 <form @submit.prevent="handleSubmit">
-                    <div v-for="column in getColumns()">
-                        <div class="p-2" :class="((invalid === true) && validationModel[column.fieldName] !== undefined) ? 'bg-red-100' : ''">
-                            <label class="p-1 text-xs" :for="column.fieldName">{{ `${column.required ? '* ' : ''}${column.title}` }}</label>
+                    <div v-for="column in getColumns()" @focusout="checkFormValidation">
+                        <div class="p-2"
+                            :class="((invalid === true) && validationModel[column.fieldName] !== undefined) ? 'bg-red-100' : ''">
+                            <label class="p-1 text-xs" :for="column.fieldName">{{ `${column.required ? '* ' :
+                                ''}${column.title}` }}</label>
                             <div v-if="column.type === 'lookup'">
                                 <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
                                     v-model="props.model[column.fieldName]">
-                                    <option v-for="(item, index) in lookups[column.lookup?.name ?? '']" :value="item.key" :key="index"><label>{{ item.value
-                                    }}</label></option>
+                                    <option v-for="(item, index) in lookups[column.lookup?.name ?? '']" :value="item.key"
+                                        :key="index"><label>{{ item.value
+                                        }}</label></option>
                                 </select>
                             </div>
                             <div v-else-if="column.type === 'memo'">
@@ -132,10 +157,19 @@ onMounted(async () => {
                                     class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
                                     :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
                             </div>
-                            <span class="text-xs text-red-700 ml-1" v-if="(invalid === true) && validationModel[column.fieldName] !== undefined"> {{ String(validationModel[column.fieldName]) }}</span>
-                        
+
+                            <span class="text-xs text-red-700 ml-1"
+                                v-if="(invalid === true) && validationModel[column.fieldName] !== undefined"> {{
+                                    String(validationModel[column.fieldName]) }}</span>
+
+
                         </div>
                     </div>
+                    <transition name="fade" mode="out-in">
+                        <div v-if="formValidationError" class="flex bg-red-100 m-2 p-3 min-w-max rounded-md">
+                            <span class=" text-xs text-red-700 ml-1"> {{ formValidationError }}</span>
+                        </div>
+                    </transition>
                 </form>
             </div>
             <div class="flex mt-auto justify-center">
@@ -148,3 +182,14 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+<style>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

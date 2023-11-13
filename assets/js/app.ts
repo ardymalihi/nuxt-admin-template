@@ -1,5 +1,6 @@
 type CustomFormatHandler = (row: any, column: IColumnConfig, value: any) => string;
-
+type ColumnValidationHandler = (row: any, column: IColumnConfig, value: any) => string | undefined;
+type FormValidationHandler = (model: any) => Promise<string | undefined>;
 export interface IColumnConfig {
     fieldName: string;
     title: string;
@@ -17,11 +18,13 @@ export interface IColumnConfig {
     editable?: boolean;
     priority?: number;
     customFormatter?: CustomFormatHandler;
+    validations?: ColumnValidationHandler[];
 }
 
 export interface ITableConfig {
     editable: boolean;
     columns: IColumnConfig[] | null,
+    validation?: FormValidationHandler;
 }
 
 export interface IAppConfig {
@@ -38,6 +41,11 @@ export const app: IAppConfig = {
         tasks:
         {
             editable: true,
+            validation: async (model) => {
+                if (model.title === "task123") {
+                    return "This task is already taken";
+                }
+            },
             columns: [
                 {
                     fieldName: "id",
@@ -66,6 +74,13 @@ export const app: IAppConfig = {
                     defaultValue: "Hi There!",
                     formOrder: 1,
                     required: true,
+                    validations: [
+                        (row, column, value) => {
+                            if (String(value).length <= 3) {
+                                return "Title length should be greater than 3 characters"
+                            }
+                        }
+                    ]
                 },
                 {
                     fieldName: "completed",
@@ -81,6 +96,13 @@ export const app: IAppConfig = {
                     type: "memo",
                     formOrder: 4,
                     required: false,
+                    validations: [
+                        (row, column, value) => {
+                            if (!String(value).startsWith('desc.')) {
+                                return "Description should starts with 'desc.'"
+                            }
+                        }
+                    ]
                 }
             ]
         }
