@@ -90,7 +90,7 @@ export const app: IAppConfig = {
                     type: "boolean",
                     defaultValue: true,
                     formOrder: 2,
-                    required: true,
+                    required: false,
                     columnOrder: 4,
                 },
                 {

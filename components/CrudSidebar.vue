@@ -3,6 +3,14 @@ interface ILookupItem {
     key: string;
     value: any;
 }
+
+type SortDirection = 'asc' | 'desc';
+
+interface ISortConfig {
+    property: string;
+    direction: SortDirection;
+}
+
 import { IColumnConfig, ITableConfig, TableNames, app } from '~/assets/js/app';
 
 const props = defineProps<{
@@ -80,11 +88,28 @@ async function handleSubmit() {
     }
 }
 
+function sortByProperties(data: any[], ...sortProperties: ISortConfig[]): any[] {
+    return data.sort((a, b) => {
+        for (const sortConfig of sortProperties) {
+            const { property, direction } = sortConfig;
+            const aValue = (a as any)[property];
+            const bValue = (b as any)[property];
+
+            if (aValue < bValue) {
+                return direction === 'asc' ? -1 : 1;
+            } else if (aValue > bValue) {
+                return direction === 'asc' ? 1 : -1;
+            }
+        }
+        return 0;
+    });
+}
+
 async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
     let result: ILookupItem[] = [];
     const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
-    const { data, error } = await client.from(column.lookup?.name ?? "").select(`${filedIdName}, ${column.lookup?.displayFieldName}`);
     const fieldNames = column.lookup?.displayFieldName.split(",");
+    const { data, error } = await client.from(column.lookup?.name ?? "").select(`${filedIdName}, ${column.lookup?.displayFieldName}`);
     for (const row of data as any[]) {
         const values: string[] = [];
         for (const fieldName of fieldNames || []) {
@@ -95,6 +120,7 @@ async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
             value: values.join(" ")
         });
     }
+    result = sortByProperties(result, { property: "value", direction: "asc"});
     if (!column.required) {
         result = [{
             key: "",
@@ -134,44 +160,54 @@ onMounted(async () => {
             :class="{ 'translate-x-full': !showSidebar }">
 
             <div class="flex flex-col h-[90%] overflow-y-auto">
-                <form @submit.prevent="handleSubmit">
-                    <div v-for="column in getColumns()" @focusout="checkFormValidation">
-                        <div class="p-2"
-                            :class="((invalid === true) && validationModel[column.fieldName] !== undefined) ? 'bg-red-100' : ''">
-                            <label class="p-1 text-xs" :for="column.fieldName">{{ `${column.required ? '* ' :
-                                ''}${column.title}` }}</label>
-                            <div v-if="column.type === 'lookup'">
-                                <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
-                                    v-model="props.model[column.fieldName]">
-                                    <option v-for="(item, index) in lookups[column.lookup?.name ?? '']" :value="item.key"
-                                        :key="index"><label>{{ item.value
-                                        }}</label></option>
-                                </select>
-                            </div>
-                            <div v-else-if="column.type === 'memo'">
-                                <textarea cols="40" rows="5" v-model="props.model[column.fieldName]"
-                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
-                                    :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
-                            </div>
-                            <div v-else="column.type === 'string'">
-                                <input v-model="props.model[column.fieldName]"
-                                    class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
-                                    :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
-                            </div>
+                <ClientOnly fallback-tag="span" fallback="Loading form...">
+                    <form @submit.prevent="handleSubmit">
+                        <div v-for="column in getColumns()" @focusout="checkFormValidation">
+                            <div class="p-2"
+                                :class="((invalid === true) && validationModel[column.fieldName] !== undefined) ? 'bg-red-100' : ''">
+                                <label class="p-1 text-xs" :for="column.fieldName">{{ `${column.required ? '* ' :
+                                    ''}${column.title}` }}</label>
+                                <div v-if="column.type === 'lookup'">
+                                    <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                        v-model="props.model[column.fieldName]">
+                                        <option v-for="(item, index) in lookups[column.lookup?.name ?? '']"
+                                            :value="item.key" :key="index"><label>{{ item.value
+                                            }}</label></option>
+                                    </select>
+                                </div>
+                                <div v-else-if="column.type === 'boolean'">
+                                    <select class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                        v-model="props.model[column.fieldName]">
+                                        <option v-for="(item, index) in [null, true, false]" :value="item" :key="index">
+                                            <label>{{ `${item === true ? 'YES' : (item === false ? 'NO' : '')}` }}</label>
+                                        </option>
+                                    </select>
+                                </div>
+                                <div v-else-if="column.type === 'memo'">
+                                    <textarea cols="40" rows="5" v-model="props.model[column.fieldName]"
+                                        class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                        :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                                </div>
+                                <div v-else="column.type === 'string'">
+                                    <input v-model="props.model[column.fieldName]"
+                                        class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                        :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                                </div>
 
-                            <span class="text-xs text-red-700 ml-1"
-                                v-if="(invalid === true) && validationModel[column.fieldName] !== undefined"> {{
-                                    String(validationModel[column.fieldName]) }}</span>
+                                <span class="text-xs text-red-700 ml-1"
+                                    v-if="(invalid === true) && validationModel[column.fieldName] !== undefined"> {{
+                                        String(validationModel[column.fieldName]) }}</span>
 
 
+                            </div>
                         </div>
-                    </div>
-                    <transition name="fade" mode="out-in">
-                        <div v-if="formValidationError" class="flex bg-red-100 m-2 p-3 min-w-max rounded-md">
-                            <span class=" text-xs text-red-700 ml-1"> {{ formValidationError }}</span>
-                        </div>
-                    </transition>
-                </form>
+                        <transition name="fade" mode="out-in">
+                            <div v-if="formValidationError" class="flex bg-red-100 m-2 p-3 min-w-max rounded-md">
+                                <span class=" text-xs text-red-700 ml-1"> {{ formValidationError }}</span>
+                            </div>
+                        </transition>
+                    </form>
+                </ClientOnly>
             </div>
             <div class="flex mt-auto justify-center">
                 <button @click="handleSubmit"
