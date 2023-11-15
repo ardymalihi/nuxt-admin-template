@@ -58,6 +58,14 @@ function checkFormValidation() {
             validationModel.value[column.fieldName] = `${column.title} is required`;
             isValid = false;
         }
+        if (column.required &&  column.type === "image_url" && String(props.model[column.fieldName] ?? "").length > 0) {
+            const image_element = document.getElementById(`img_${column.fieldName}`);
+            if (image_element && (image_element as HTMLImageElement).src.endsWith("bad_image.jpg")) {
+                console.log(image_element?.id)
+                validationModel.value[column.fieldName] = `${column.title} is invalid`;
+                isValid = false;
+            }   
+        }
         if (column.validations && props.model[column.fieldName]) {
             for (const validation of column.validations) {
                 const validationResult = validation(props.model, column, props.model[column.fieldName]);
@@ -141,6 +149,15 @@ async function load() {
     }
 }
 
+function handleImageError(event: Event, column: IColumnConfig, value: any) {
+    delete validationModel.value[column.fieldName];
+    if (value) {
+    (event.target as HTMLImageElement).src = "/images/bad_image.jpg";
+    } else {
+        (event.target as HTMLImageElement).src = "/images/no_image.jpg"; 
+    }
+}
+
 defineExpose({
     openSidebar,
     closeSidebar,
@@ -187,6 +204,12 @@ onMounted(async () => {
                                     <textarea cols="40" rows="5" v-model="props.model[column.fieldName]"
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
                                         :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                                </div>
+                                <div v-else-if="column.type === 'image_url'">
+                                    <input v-model="props.model[column.fieldName]"
+                                        class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
+                                        :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
+                                    <img :id="`img_${column.fieldName}`" :ref="`img_${column.fieldName}`" class="mt-1 rounded-md" :src="props.model[column.fieldName]" width="500" :alt="column.title" @error="handleImageError($event, column, props.model[column.fieldName])"/>
                                 </div>
                                 <div v-else="column.type === 'string'">
                                     <input v-model="props.model[column.fieldName]"

@@ -29,6 +29,11 @@ function formatValue(row: any, column: IColumnConfig): string {
         }
         value = values.join(" ");
     }
+    else if (column.type === "image_url") {
+        if (row[column.fieldName]) {
+          value = `<img class="h-[64px]" src="${row[column.fieldName]}" />`
+        }
+    }
     else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
     }

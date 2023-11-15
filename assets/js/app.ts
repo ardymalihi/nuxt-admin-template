@@ -4,7 +4,7 @@ type FormValidationHandler = (model: any) => Promise<string | undefined>;
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo";
+    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url";
     defaultValue?: any;
     columnOrder: number;
     formOrder: number;
@@ -52,7 +52,7 @@ export const app: IAppConfig = {
                     type: "id",
                     columnOrder: 1,
                     required: false,
-                    formOrder: 0,
+                    formOrder: 1,
                 },
                 {
                     fieldName: "user_id",
@@ -107,6 +107,14 @@ export const app: IAppConfig = {
                             }
                         }
                     ]
+                },
+                {
+                    fieldName: "image_url",
+                    title: "Image",
+                    type: "image_url",
+                    formOrder: 0,
+                    required: true,
+                    columnOrder: 0,
                 }
             ]
         }
