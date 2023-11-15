@@ -26,16 +26,21 @@ export interface ITableConfig {
     validation?: FormValidationHandler;
 }
 
-export interface IAppConfig {
+export interface ISchema {
     table: {
         [key in TableNames]: ITableConfig;
     }
+}
+
+export interface IAppConfig {
+    schema: ISchema;
 }
 
 
 export type TableNames = 'tasks';
 
 export const app: IAppConfig = {
+    schema: {
     table: {
         tasks:
         {
@@ -135,4 +140,5 @@ export const app: IAppConfig = {
         }
 
     }
+}
 }

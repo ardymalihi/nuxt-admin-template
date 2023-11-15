@@ -11,9 +11,10 @@ interface ISortConfig {
     direction: SortDirection;
 }
 
-import { IColumnConfig, ITableConfig, TableNames, app } from '~/assets/js/app';
+import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
 
 const props = defineProps<{
+    schema: ISchema,
     tableName: TableNames,
     editMode: boolean,
     model: any
@@ -30,7 +31,7 @@ const validationModel: any = ref({});
 const formValidationError = ref("");
 
 function getColumns(): IColumnConfig[] {
-    return app.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a, b) => a.formOrder - b.formOrder) ?? [];
+    return props.schema.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a, b) => a.formOrder - b.formOrder) ?? [];
 }
 
 const openSidebar = () => {
@@ -55,7 +56,7 @@ function closeSidebar() {
 function checkFormValidation() {
     validationModel.value = {};
     let isValid = true;
-    for (const column of app.table[props.tableName].columns ?? []) {
+    for (const column of props.schema.table[props.tableName].columns ?? []) {
         if (column.required && String(props.model[column.fieldName] ?? "").length <= 0) {
             validationModel.value[column.fieldName] = `${column.title} is required`;
             isValid = false;
@@ -85,8 +86,8 @@ function checkFormValidation() {
 async function handleSubmit() {
     checkFormValidation();
     if (!invalid.value) {
-        if (app.table[props.tableName].validation) {
-            const formValidationMessage = await app.table[props.tableName].validation?.(props.model);
+        if (props.schema.table[props.tableName].validation) {
+            const formValidationMessage = await props.schema.table[props.tableName].validation?.(props.model);
             if (formValidationMessage) {
                 formValidationError.value = formValidationMessage;
                 setTimeout(() => formValidationError.value = "", 4000);
@@ -117,7 +118,7 @@ function sortByProperties(data: any[], ...sortProperties: ISortConfig[]): any[] 
 
 async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
     let result: ILookupItem[] = [];
-    const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
+    const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
     const fieldNames = column.lookup?.displayFieldName.split(",");
     const { data, error } = await client.from(column.lookup?.name ?? "").select(`${filedIdName}, ${column.lookup?.displayFieldName}`);
     for (const row of data as any[]) {
@@ -142,7 +143,7 @@ async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
 }
 
 async function load() {
-    const lookupColumns = app.table[props.tableName].columns?.filter(c => c.type === "lookup");
+    const lookupColumns = props.schema.table[props.tableName].columns?.filter(c => c.type === "lookup");
     if (lookupColumns) {
         for (const lookupColumn of lookupColumns) {
             const lookupItems = await getLookupItems(lookupColumn);

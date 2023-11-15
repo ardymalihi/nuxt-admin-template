@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { app } from '~/assets/js/app';
 definePageMeta({
     layout: "admin",
     middleware: [
@@ -9,6 +10,6 @@ definePageMeta({
 <template>
     <img src="~/assets/images/no_image.png" />
     <div class="container mx-auto">
-        <Table table-name="tasks" />
+        <SupabaseView :schema="app.schema" table-name="tasks" />
     </div>
 </template>

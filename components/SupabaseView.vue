@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import CrudSidebar from '~/components/CrudSidebar.vue';
-import { IColumnConfig, TableNames, app } from '~/assets/js/app';
+import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
 
 const props = defineProps<{
+    schema: ISchema; 
     tableName: TableNames
 }>();
 
@@ -13,7 +14,7 @@ const crudSidebarEditMode = ref(true);
 const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
 const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null);
-const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
+const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
 const currentOrderFieldName = ref(filedIdName);
 const isAscending = ref(true);
 
@@ -75,7 +76,7 @@ async function deleteRecord() {
 function getSelectFields(): string {
     let selectedFields = "*";
     let selectedLookups = "";
-    const columns = app.table[props.tableName].columns ?? [];
+    const columns = props.schema.table[props.tableName].columns ?? [];
     if (columns.length) {
         selectedFields = columns.map(c => c.fieldName).join(",");
         const lookups: {
@@ -127,7 +128,7 @@ function showEditModal(id: string) {
 
 function createEmptyRow(): any {
     const result: any = {};
-    for (let c of app.table[props.tableName].columns ?? ([] as IColumnConfig[])) {
+    for (let c of props.schema.table[props.tableName].columns ?? ([] as IColumnConfig[])) {
         result[c.fieldName] = c.defaultValue ?? null;
     }
     return result;
@@ -145,7 +146,7 @@ function getInsertReadyObject(obj: any) {
 
 function getUpdateReadyObject(obj: any) {
     const result: any = {};
-    const columns = (app.table[props.tableName].columns ?? []);
+    const columns = (props.schema.table[props.tableName].columns ?? []);
     for (const column of columns) {
         result[column.fieldName] = obj[column.fieldName] ?? null;
     }
@@ -195,7 +196,7 @@ async function orderBy(column: IColumnConfig) {
 await load();
 </script>
 <template>
-    <CrudSidebar ref="crudSidebar" :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow"
+    <CrudSidebar ref="crudSidebar" :schema="props.schema"  :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow"
         @form-submitted="handleSubmit" />
     <!-- Overlay -->
     <div v-if="overlayOpen" ref="overlay"
@@ -239,14 +240,14 @@ await load();
         <thead class="bg-cyan-500 h-[60px]">
             <tr class="text-left text-white">
                 <th @click="orderBy(column)" class="p-2" :class="getColumnVisibility(column)"
-                    v-for="(column, index) in app.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)">
+                    v-for="(column, index) in props.schema.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)">
                     <span class="cursor-pointer">{{ column.title }}</span>
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span> 
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span> 
                 </th>
-                <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
+                <th v-if="props.schema.table[props.tableName].editable" class="p-2 w-[58px]">
                 </th>
-                <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
+                <th v-if="props.schema.table[props.tableName].editable" class="p-2 w-[58px]">
                     <!-- Insert Button-->
                     <button @click="showInsertModal"
                         class="w-full focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
@@ -261,11 +262,11 @@ await load();
         <tbody class="bg-white">
             <tr v-for="(row,index) in rows" class="border hover:bg-stone-50 h-[50px]">
                 <td class="p-2" :class="getColumnVisibility(column)"
-                    v-for="(column, index) in app.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)"
+                    v-for="(column, index) in props.schema.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)"
                     :key="index">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
-                <td v-if="app.table[props.tableName].editable" class="p-2">
+                <td v-if="props.schema.table[props.tableName].editable" class="p-2">
                     <!-- Delete Button-->
                     <button @click="openDeleteModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
@@ -276,7 +277,7 @@ await load();
                         </svg>
                     </button>
                 </td>
-                <td v-if="app.table[props.tableName].editable" class="p-2">
+                <td v-if="props.schema.table[props.tableName].editable" class="p-2">
                     <!-- Edit Button-->
                     <button @click="showEditModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
