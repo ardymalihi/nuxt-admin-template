@@ -42,6 +42,8 @@ const openSidebar = () => {
 function getInputType(column: IColumnConfig): string {
     if (column.type === "boolean") {
         return "checkbox";
+    } else if (column.type === "date") {
+        return "date";
     }
     return "text";
 }
@@ -216,7 +218,6 @@ onMounted(async () => {
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
                                         :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
                                 </div>
-
                                 <span class="text-xs text-red-700 ml-1"
                                     v-if="(invalid === true) && validationModel[column.fieldName] !== undefined"> {{
                                         String(validationModel[column.fieldName]) }}</span>

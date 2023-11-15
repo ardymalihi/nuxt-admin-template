@@ -4,7 +4,7 @@ type FormValidationHandler = (model: any) => Promise<string | undefined>;
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url";
+    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date";
     defaultValue?: any;
     columnOrder: number;
     formOrder: number;
@@ -115,6 +115,21 @@ export const app: IAppConfig = {
                     formOrder: 0,
                     required: true,
                     columnOrder: 0,
+                },
+                {
+                    fieldName: "assigned_date",
+                    title: "Assigned Date",
+                    type: "date",
+                    formOrder: 4,
+                    required: true,
+                    columnOrder: 5,
+                    validations:[
+                        (row, column, value) => {
+                            if (new Date(String(value)).getFullYear() < 2018) {
+                                return "Assigned Year cannot be less than 2018"
+                            }
+                        }
+                    ]
                 }
             ]
         }
