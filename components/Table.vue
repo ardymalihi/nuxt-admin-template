@@ -14,6 +14,8 @@ const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
 const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null);
 const filedIdName = app.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
+const currentOrderFieldName = ref(filedIdName);
+const isAscending = ref(true);
 
 const client = useSupabaseClient();
 
@@ -103,7 +105,7 @@ function getSelectFields(): string {
 async function load() {
     console.log("columns:", getSelectFields());
     console.log("field id name:", filedIdName);
-    const { data, error } = await client.from(props.tableName).select(getSelectFields()).order(filedIdName, { ascending: true });
+    const { data, error } = await client.from(props.tableName).select(getSelectFields()).order(currentOrderFieldName.value, { ascending: isAscending.value });
     console.log("data:", data);
     rows.value = data as any[];
 }
@@ -177,6 +179,18 @@ function getColumnVisibility(column: IColumnConfig): string {
     return result;
 }
 
+async function orderBy(column: IColumnConfig) {
+    if (currentOrderFieldName.value === column.fieldName) {
+        if (isAscending) {
+            isAscending.value = !isAscending.value;
+        }
+    } else {
+        currentOrderFieldName.value = column.fieldName;
+        isAscending.value = true;
+    }
+    await load();
+}
+
 
 await load();
 </script>
@@ -224,9 +238,11 @@ await load();
     <table class="table-fixed w-[100%] shadow-md rounded-md overflow-hidden">
         <thead class="bg-cyan-500 h-[60px]">
             <tr class="text-left text-white">
-                <th class="p-2" :class="getColumnVisibility(column)"
+                <th @click="orderBy(column)" class="p-2" :class="getColumnVisibility(column)"
                     v-for="(column, index) in app.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)">
-                    {{ column.title }}
+                    <span class="cursor-pointer">{{ column.title }}</span>
+                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span> 
+                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span> 
                 </th>
                 <th v-if="app.table[props.tableName].editable" class="p-2 w-[58px]">
                 </th>
