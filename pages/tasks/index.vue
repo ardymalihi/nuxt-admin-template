@@ -8,8 +8,7 @@ definePageMeta({
 });
 </script>
 <template>
-    <img src="~/assets/images/no_image.png" />
     <div class="container mx-auto">
-        <SupabaseView :schema="app.schema" table-name="tasks" />
+        <SupabaseView :schema="app.schema" table-name="tasks" view-type="table" />
     </div>
 </template>

@@ -55,7 +55,7 @@ export const app: IAppConfig = {
                     fieldName: "id",
                     title: "ID",
                     type: "id",
-                    columnOrder: 1,
+                    columnOrder: 0,
                     required: false,
                     formOrder: 1,
                 },
@@ -119,7 +119,7 @@ export const app: IAppConfig = {
                     type: "image_url",
                     formOrder: 0,
                     required: true,
-                    columnOrder: 0,
+                    columnOrder: 1,
                 },
                 {
                     fieldName: "assigned_date",
@@ -127,7 +127,7 @@ export const app: IAppConfig = {
                     type: "date",
                     formOrder: 4,
                     required: true,
-                    columnOrder: 5,
+                    columnOrder: 7,
                     validations:[
                         (row, column, value) => {
                             if (new Date(String(value)).getFullYear() < 2018) {

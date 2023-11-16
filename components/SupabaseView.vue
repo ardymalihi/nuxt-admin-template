@@ -3,8 +3,9 @@ import CrudSidebar from '~/components/CrudSidebar.vue';
 import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
 
 const props = defineProps<{
-    schema: ISchema; 
-    tableName: TableNames
+    schema: ISchema;
+    tableName: TableNames;
+    viewType: 'table' | 'card' | 'detail'
 }>();
 
 const rows = ref<any[]>([]);
@@ -34,7 +35,8 @@ function formatValue(row: any, column: IColumnConfig): string {
     }
     else if (column.type === "image_url") {
         if (row[column.fieldName]) {
-          value = `<img class="h-[64px]" src="${row[column.fieldName]}" />`
+            const size = `${props.viewType === 'card' ? '200px' : '40px'}`
+            value = `<div class="flex justify-center items-center h-[${size}]"><img class="h-[${size}] rounded-lg" src="${row[column.fieldName]}" /></div>`
         }
     }
     else if (column.type === "boolean") {
@@ -170,13 +172,18 @@ async function handleSubmit({ model }: any) {
     await load();
 }
 
+function getOrderedColumns() {
+    return props.schema.table[props.tableName].columns?.filter(c =>c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder);
+}
+
+
 function getColumnVisibility(column: IColumnConfig): string {
     let result = '';
-    if (column.columnOrder >=3 &&  column.columnOrder <= 4) {
+    if (column.columnOrder >= 3 && column.columnOrder <= 4) {
         result = "hidden md:table-cell";
     } else if (column.columnOrder > 4) {
         result = "hidden lg:table-cell";
-    } 
+    }
     return result;
 }
 
@@ -196,8 +203,8 @@ async function orderBy(column: IColumnConfig) {
 await load();
 </script>
 <template>
-    <CrudSidebar ref="crudSidebar" :schema="props.schema"  :table-name="props.tableName" :edit-mode="crudSidebarEditMode" :model="currentRow"
-        @form-submitted="handleSubmit" />
+    <CrudSidebar ref="crudSidebar" :schema="props.schema" :table-name="props.tableName" :edit-mode="crudSidebarEditMode"
+        :model="currentRow" @form-submitted="handleSubmit" />
     <!-- Overlay -->
     <div v-if="overlayOpen" ref="overlay"
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"
@@ -236,14 +243,15 @@ await load();
             </div>
         </div>
     </div>
-    <table class="table-fixed w-[100%] shadow-md rounded-md overflow-hidden">
+    <!-- Table View Type -->
+    <table v-if="props.viewType === 'table'" class="table-fixed w-[100%] shadow-md rounded-md overflow-hidden">
         <thead class="bg-cyan-500 h-[60px]">
             <tr class="text-left text-white">
                 <th @click="orderBy(column)" class="p-2" :class="getColumnVisibility(column)"
-                    v-for="(column, index) in props.schema.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)">
+                    v-for="(column, index) in getOrderedColumns()">
                     <span class="cursor-pointer">{{ column.title }}</span>
-                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span> 
-                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span> 
+                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span>
+                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span>
                 </th>
                 <th v-if="props.schema.table[props.tableName].editable" class="p-2 w-[58px]">
                 </th>
@@ -260,9 +268,9 @@ await load();
             </tr>
         </thead>
         <tbody class="bg-white">
-            <tr v-for="(row,index) in rows" class="border hover:bg-stone-50 h-[50px]">
+            <tr v-for="(row, index) in rows" class="border hover:bg-stone-50 h-[50px]">
                 <td class="p-2" :class="getColumnVisibility(column)"
-                    v-for="(column, index) in props.schema.table[props.tableName].columns?.sort((a, b) => a.columnOrder - b.columnOrder)"
+                    v-for="(column, index) in getOrderedColumns()"
                     :key="index">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
@@ -291,4 +299,25 @@ await load();
             </tr>
         </tbody>
     </table>
+    <!-- Card View Type -->
+    <div v-if="props.viewType === 'card'" class="flex flex-wrap">
+        <div v-for="(row, index) in rows"
+            class="flex flex-col border bg-slate-50 rounded-md p-2 m-2 w-[300px] shadow-lg shadow-gray-600">
+            <div class="p-2 text" :class="getColumnVisibility(column)"
+                v-for="(column, index) in getOrderedColumns()"
+                :key="index">
+                <div v-html="formatValue(row, column)"></div>
+            </div>
+        </div>
+        <div class="flex border bg-cyan-500 rounded-md p-2 m-2 w-[300px] shadow-lg shadow-gray-600 justify-center items-center">
+            <!-- Insert Button-->
+            <button @click="showInsertModal"
+                        class="focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-10 h-10">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </button>
+        </div>
+    </div>
 </template>

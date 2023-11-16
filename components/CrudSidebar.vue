@@ -61,13 +61,13 @@ function checkFormValidation() {
             validationModel.value[column.fieldName] = `${column.title} is required`;
             isValid = false;
         }
-        if (column.required &&  column.type === "image_url" && String(props.model[column.fieldName] ?? "").length > 0) {
+        if (column.required && column.type === "image_url" && String(props.model[column.fieldName] ?? "").length > 0) {
             const image_element = document.getElementById(`img_${column.fieldName}`);
             if (image_element && (image_element as HTMLImageElement).src.endsWith("bad_image.jpg")) {
                 console.log(image_element?.id)
                 validationModel.value[column.fieldName] = `${column.title} is invalid`;
                 isValid = false;
-            }   
+            }
         }
         if (column.validations && props.model[column.fieldName]) {
             for (const validation of column.validations) {
@@ -131,7 +131,7 @@ async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
             value: values.join(" ")
         });
     }
-    result = sortByProperties(result, { property: "value", direction: "asc"});
+    result = sortByProperties(result, { property: "value", direction: "asc" });
     if (!column.required) {
         result = [{
             key: "",
@@ -155,9 +155,9 @@ async function load() {
 function handleImageError(event: Event, column: IColumnConfig, value: any) {
     delete validationModel.value[column.fieldName];
     if (value) {
-    (event.target as HTMLImageElement).src = "/images/bad_image.jpg";
+        (event.target as HTMLImageElement).src = "/images/bad_image.jpg";
     } else {
-        (event.target as HTMLImageElement).src = "/images/no_image.jpg"; 
+        (event.target as HTMLImageElement).src = "/images/no_image.jpg";
     }
 }
 
@@ -176,10 +176,10 @@ onMounted(async () => {
 <template>
     <div class="flex">
         <!-- Right Sidebar (Initially Hidden) -->
-        <div class="w-[400px] bg-stone-50 rounded-tl-md rounded-bl-md border border-gray-200 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
+        <div class="w-[400px] border bg-stone-50 rounded-md shadow-lg shadow-gray-600 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
             :class="{ 'translate-x-full': !showSidebar }">
 
-            <div class="flex flex-col h-[90%] overflow-y-auto">
+            <div class="flex flex-col h-[100%] overflow-y-auto">
                 <ClientOnly fallback-tag="span" fallback="Loading form...">
                     <form @submit.prevent="handleSubmit">
                         <div v-for="column in getColumns()" @focusout="checkFormValidation">
@@ -212,7 +212,11 @@ onMounted(async () => {
                                     <input v-model="props.model[column.fieldName]"
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
                                         :id="column.fieldName" :type="getInputType(column)" :placeholder="column.title" />
-                                    <img :id="`img_${column.fieldName}`" :ref="`img_${column.fieldName}`" class="mt-1 rounded-md" :src="props.model[column.fieldName]" width="500" :alt="column.title" @error="handleImageError($event, column, props.model[column.fieldName])"/>
+                                    <img :id="`img_${column.fieldName}`" :ref="`img_${column.fieldName}`"
+                                        class="mt-1 rounded-md"
+                                        :src="props.model[column.fieldName] ?? '/images/no_image.jpg'" width="500"
+                                        :alt="column.title"
+                                        @error="handleImageError($event, column, props.model[column.fieldName])" />
                                 </div>
                                 <div v-else="column.type === 'string'">
                                     <input v-model="props.model[column.fieldName]"
@@ -226,19 +230,21 @@ onMounted(async () => {
 
                             </div>
                         </div>
-                        <transition name="fade" mode="out-in">
-                            <div v-if="formValidationError" class="flex bg-red-100 m-2 p-3 min-w-max rounded-md">
-                                <span class=" text-xs text-red-700 ml-1"> {{ formValidationError }}</span>
-                            </div>
-                        </transition>
+                        <div class="h-[44px]">
+                            <transition name="fade" mode="out-in">
+                                <div v-if="formValidationError" class="flex bg-red-100 ml-2 mr-2 p-3 min-w-max rounded-md">
+                                    <span class=" text-xs text-red-700 ml-1"> {{ formValidationError }}</span>
+                                </div>
+                            </transition>
+                        </div>
                     </form>
                 </ClientOnly>
-            </div>
-            <div class="flex mt-auto justify-center">
-                <button @click="handleSubmit"
-                    class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Submit</button>
-                <button @click="closeSidebar"
-                    class="m-1 p-2 focus:shadow-outline rounded bg-red-500 px-2 py-2 text-white hover:bg-red-600 focus:outline-none">Close</button>
+                <div class="flex mb-2 justify-center">
+                    <button @click="handleSubmit"
+                        class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Submit</button>
+                    <button @click="closeSidebar"
+                        class="m-1 p-2 focus:shadow-outline rounded bg-red-500 px-2 py-2 text-white hover:bg-red-600 focus:outline-none">Close</button>
+                </div>
             </div>
             <!-- Sidebar content goes here -->
         </div>
@@ -253,5 +259,4 @@ onMounted(async () => {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
-}
-</style>
+}</style>
