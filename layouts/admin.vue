@@ -20,7 +20,7 @@ async function logout() {
             <!-- Sidebar Pane -->
             <Sidebar ref="sidebar"/>
             <!-- Main Pane -->
-            <div class="w-[100%]" ref="main">
+            <div class="w-[100%]">
                 <!--Header Pane -->
                 <div class="flex h-[64px] text-cyan-200">
                     <div class="flex-row p-5" @click="sidebar?.toggleSidebar">
