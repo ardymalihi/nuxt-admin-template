@@ -35,8 +35,9 @@ function formatValue(row: any, column: IColumnConfig): string {
         value = values.join(" ");
     } else if (column.type === "image_url") {
         if (row[column.fieldName]) {
-            const size = `${props.viewType === 'card' ? '200px' : '40px'}`
-            value = `<div class="flex justify-center items-center h-[${size}]"><img class="h-[${size}] rounded-lg" src="${row[column.fieldName]}" /></div>`
+            const size = `${props.viewType === 'card' ? '200px' : '40px'}`;
+            const align = `${props.viewType === 'card' ? 'justify-center items-center' : ''}`;
+            value = `<div class="flex ${align} h-[${size}]"><img class="h-[${size}] rounded-lg" src="${row[column.fieldName]}" /></div>`
         }
     } else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
@@ -78,7 +79,7 @@ async function deleteRecord() {
 function getSelectFields(): string {
     let selectedFields = "*";
     let selectedLookups = "";
-    const columns = props.schema.table[props.tableName].columns ?? [];
+    const columns = (props.schema.table[props.tableName].columns ?? []).filter(f => f.type !== "collection");
     if (columns.length) {
         selectedFields = columns.map(c => c.fieldName).join(",");
         const lookups: {

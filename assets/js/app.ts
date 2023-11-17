@@ -4,7 +4,7 @@ type FormValidationHandler = (model: any) => Promise<string | undefined>;
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date";
+    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date" | "collection";
     defaultValue?: any;
     columnOrder: number;
     formOrder: number;
@@ -37,7 +37,7 @@ export interface IAppConfig {
 }
 
 
-export type TableNames = 'tasks';
+export type TableNames = 'tasks' | 'tasks_progress';
 
 export const app: IAppConfig = {
     schema: {
@@ -135,10 +135,59 @@ export const app: IAppConfig = {
                             }
                         }
                     ]
+                },
+                {
+                    fieldName: "tasks_progress",
+                    title: "Tasks Progress",
+                    type: "collection",
+                    formOrder: 4,
+                    required: true,
+                    columnOrder: 7,
+                    validations:[
+                        (row, column, value) => {
+                            if (new Date(String(value)).getFullYear() < 2018) {
+                                return "Assigned Year cannot be less than 2018"
+                            }
+                        }
+                    ]
                 }
             ]
+        },
+        tasks_progress: {
+            editable: true,
+            columns: [
+                {
+                    fieldName: "id",
+                    title: "ID",
+                    type: "id",
+                    columnOrder: 0,
+                    required: false,
+                    formOrder: 1,
+                },
+                {
+                    fieldName: "created_date",
+                    title: "Created Date",
+                    type: "date",
+                    formOrder: 2,
+                    required: true,
+                    columnOrder: 1,
+                },
+                {
+                    fieldName: "task_id",
+                    title: "Task",
+                    type: "lookup",
+                    lookup: {
+                        sourceType: "table",
+                        name: "tasks",
+                        idFieldName: "id",
+                        displayFieldName: "title",
+                    },
+                    formOrder: 3,
+                    columnOrder: 2,
+                    required: true,
+                },
+            ]
         }
-
     }
 }
 }
