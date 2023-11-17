@@ -37,7 +37,7 @@ function formatValue(row: any, column: IColumnConfig): string {
         if (row[column.fieldName]) {
             const size = `${props.viewType === 'card' ? '200px' : '40px'}`;
             const align = `${props.viewType === 'card' ? 'justify-center items-center' : ''}`;
-            value = `<div class="flex ${align} h-[${size}]"><img class="h-[${size}] rounded-lg" src="${row[column.fieldName]}" /></div>`
+            value = `<div class="flex ${align} h-[${size}]"><img class="h-[${size}] rounded-md" src="${row[column.fieldName]}" /></div>`
         }
     } else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
@@ -223,7 +223,7 @@ await load();
         :model="currentRow" @form-submitted="handleSubmit" />
     <!-- Delete Modal -->
     <div v-if="deleteModal"
-        class="flex justify-center items-center fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10"
+        class="flex justify-center items-center fixed top-0 left-0 right-0 bottom-0 w-full h-screen"
         @click="closeOverlay">
         <div
             class="bg-stone-50 relative transform overflow-hidden rounded-lg border text-left shadow-xl shadow-black transition-all sm:my-8 sm:w-full sm:max-w-lg">
