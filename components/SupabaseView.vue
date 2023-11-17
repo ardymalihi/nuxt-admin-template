@@ -32,16 +32,15 @@ function formatValue(row: any, column: IColumnConfig): string {
             }
         }
         value = values.join(" ");
-    }
-    else if (column.type === "image_url") {
+    } else if (column.type === "image_url") {
         if (row[column.fieldName]) {
             const size = `${props.viewType === 'card' ? '200px' : '40px'}`
             value = `<div class="flex justify-center items-center h-[${size}]"><img class="h-[${size}] rounded-lg" src="${row[column.fieldName]}" /></div>`
         }
-    }
-    else if (column.type === "boolean") {
+    } else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
     }
+
     if (column.customFormatter) {
         return column.customFormatter(row, column, value);
     } else {
@@ -176,6 +175,9 @@ function getOrderedColumns() {
     return props.schema.table[props.tableName].columns?.filter(c =>c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder);
 }
 
+function getOrderedCards() {
+    return props.schema.table[props.tableName].columns?.filter(c =>c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder).slice(0, 3);
+}
 
 function getColumnVisibility(column: IColumnConfig): string {
     let result = '';
@@ -197,6 +199,14 @@ async function orderBy(column: IColumnConfig) {
         isAscending.value = true;
     }
     await load();
+}
+
+function getCardStyle(column: IColumnConfig) {
+    if (column.columnOrder <= 2) {
+        return "text-center text-lg font-medium text-gray-900";
+    } else {
+        return "bg-gray-100 p-3 rounded-md text-sm font-medium text-gray-900";
+    }
 }
 
 
@@ -304,9 +314,9 @@ await load();
         <div v-for="(row, index) in rows"
             class="flex flex-col border bg-slate-50 rounded-md p-2 m-2 w-[300px] shadow-lg shadow-gray-600">
             <div class="p-2 text" :class="getColumnVisibility(column)"
-                v-for="(column, index) in getOrderedColumns()"
+                v-for="(column, index) in getOrderedCards()"
                 :key="index">
-                <div v-html="formatValue(row, column)"></div>
+                <div :class="`${getCardStyle(column)}`" v-html="formatValue(row, column)"></div>
             </div>
         </div>
         <div class="flex border bg-cyan-500 rounded-md p-2 m-2 w-[300px] shadow-lg shadow-gray-600 justify-center items-center">
