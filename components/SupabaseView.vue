@@ -206,7 +206,7 @@ function getCardStyle(column: IColumnConfig) {
     if (column.columnOrder <= 2) {
         return "text-center text-lg font-medium text-gray-900";
     } else {
-        return "bg-gray-100 p-3 rounded-md text-sm font-medium text-gray-900";
+        return "text-center p-3 rounded-md text-sm font-medium text-gray-900";
     }
 }
 
@@ -312,7 +312,7 @@ await load();
     <!-- Card View Type -->
     <div v-if="props.viewType === 'card'" class="flex flex-wrap">
         <div v-for="(row, index) in rows"
-            class="flex flex-col border bg-slate-50 rounded-md p-2 m-2 w-[300px] shadow-lg shadow-gray-600">
+            class="flex flex-col border bg-slate-50 rounded-md p-2 m-2 w-[300px] shadow-lg shadow-gray-600 hover:bg-cyan-50">
             <div class="p-2 text" :class="getColumnVisibility(column)" v-for="(column, index) in getOrderedCards()"
                 :key="index">
                 <div :class="`${getCardStyle(column)}`" v-html="formatValue(row, column)"></div>
