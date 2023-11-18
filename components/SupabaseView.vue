@@ -79,7 +79,7 @@ async function deleteRecord() {
 function getSelectFields(): string {
     let selectedFields = "*";
     let selectedLookups = "";
-    const columns = (props.schema.table[props.tableName].columns ?? []).filter(f => f.type !== "collection");
+    const columns = (props.schema.table[props.tableName].columns ?? []);
     if (columns.length) {
         selectedFields = columns.map(c => c.fieldName).join(",");
         const lookups: {

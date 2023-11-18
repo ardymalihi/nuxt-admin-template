@@ -4,7 +4,7 @@ type FormValidationHandler = (model: any) => Promise<string | undefined>;
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date" | "collection";
+    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date";
     defaultValue?: any;
     columnOrder: number;
     formOrder: number;
@@ -136,21 +136,6 @@ export const app: IAppConfig = {
                         }
                     ]
                 },
-                {
-                    fieldName: "tasks_progress",
-                    title: "Tasks Progress",
-                    type: "collection",
-                    formOrder: 4,
-                    required: true,
-                    columnOrder: 7,
-                    validations:[
-                        (row, column, value) => {
-                            if (new Date(String(value)).getFullYear() < 2018) {
-                                return "Assigned Year cannot be less than 2018"
-                            }
-                        }
-                    ]
-                }
             ]
         },
         tasks_progress: {
