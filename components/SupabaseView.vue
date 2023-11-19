@@ -318,7 +318,7 @@ await load();
                 :key="index">
                 <div :class="`${getCardStyle(column)}`" v-html="formatValue(row, column)"></div>
             </div>
-            <div class="flex flex-row justify-end">
+            <div class="p-1 mt-auto w-full text-right">
                 <!-- Edit Button-->
                 <button @click="showEditModal(String((row as any)[filedIdName]))"
                     class="focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
