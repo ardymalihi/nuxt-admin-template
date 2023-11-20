@@ -60,10 +60,7 @@ const uploadFile = async () => {
     }
 
     // Emit the file information to the parent component
-    emit('update:modelValue', {
-      fileName: selectedFile.value.name,
-      path: await response.json(), // Adjust the path as needed
-    });
+    emit('update:modelValue', (await response.json()).path);
 
     // Clear the selected file after successful upload
     selectedFile.value = null;
