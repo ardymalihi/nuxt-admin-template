@@ -226,6 +226,10 @@ onMounted(async () => {
                                         :alt="column.title"
                                         @error="handleImageError($event, column, props.model[column.fieldName])" />
                                 </div>
+                                <div v-else-if="column.type === 'file_url'">
+                                    <FileUploader :allowedExtensions="['.pdf']" uploadFolder="test" :id="column.fieldName" v-model="props.model[column.fieldName]"
+                                        class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" />
+                                </div>
                                 <div v-else="column.type === 'string'">
                                     <input v-model="props.model[column.fieldName]"
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
@@ -248,7 +252,7 @@ onMounted(async () => {
                     </form>
                 </ClientOnly>
                 <div class="flex mb-2 justify-center">
-                    <button @click="handleSubmit"
+                    <button @click="handleSubmit" type="submit"
                         class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Submit</button>
                     <button @click="closeSidebar"
                         class="m-1 p-2 focus:shadow-outline rounded bg-red-500 px-2 py-2 text-white hover:bg-red-600 focus:outline-none">Close</button>
@@ -267,4 +271,5 @@ onMounted(async () => {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
-}</style>
+}
+</style>

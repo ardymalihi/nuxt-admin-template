@@ -1,13 +1,19 @@
 <template>
-  <div class="max-w-md mx-auto my-8 p-4 bg-white shadow-md rounded-md">
+  <div v-if="props.modelValue" class="flex flex-row">
+    <a :href="`/api/download?file=${props.modelValue}`" target="_blank" class="text-xs m-1 text-blue-500">{{ props.modelValue }}</a>
+    <button @click="cleanUpload" type="button"
+      class="focus:shadow-outline h-7 rounded bg-cyan-500 text-xs pl-2 pr-2 text-white hover:bg-cyan-600 focus:outline-none">
+      Clean
+    </button>
+    <p v-if="errorMessage" class="mt-4 text-red-500">{{ errorMessage }}</p>
+  </div>
+  <div v-else="props.modelValue" class="flex flex-row">
     <input type="file" @change="handleFileChange" :accept="props.allowedExtensions.join(', ')"
-      class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" />
-
-    <button @click="uploadFile"
-      class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">
+      class="w-full" />
+    <button @click="uploadFile" type="button"
+      class="focus:shadow-outline h-7 rounded bg-cyan-500 text-xs pl-2 pr-2 text-white hover:bg-cyan-600 focus:outline-none">
       Upload
     </button>
-
     <p v-if="errorMessage" class="mt-4 text-red-500">{{ errorMessage }}</p>
   </div>
 </template>
@@ -18,13 +24,18 @@ import { ref, defineProps } from 'vue';
 interface Props {
   allowedExtensions: ['.pdf' | '.png' | '.jpg'];
   uploadFolder: string;
+  modelValue: string;
 }
 
-const props = defineProps(['allowedExtensions', 'uploadFolder']);
+const props = defineProps(['allowedExtensions', 'uploadFolder', 'modelValue']);
 const emit = defineEmits(['update:modelValue'])
 
 const selectedFile = ref<File | null>(null);
 const errorMessage = ref<string | null>(null);
+
+function cleanUpload() {
+  emit('update:modelValue', "");
+}
 
 const handleFileChange = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -60,7 +71,7 @@ const uploadFile = async () => {
     }
 
     // Emit the file information to the parent component
-    emit('update:modelValue', (await response.json()).path);
+    emit('update:modelValue',(await response.json()).path);
 
     // Clear the selected file after successful upload
     selectedFile.value = null;

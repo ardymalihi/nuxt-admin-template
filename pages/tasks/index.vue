@@ -6,12 +6,9 @@ definePageMeta({
         'auth',
     ]
 });
-const filePath = ref("");
 </script>
 <template>
     <div class="container mx-auto">
-        <SupabaseView :schema="app.schema" table-name="tasks" view-type="card" />
-        <FileUploader :allowedExtensions="['.pdf']" uploadFolder="test" v-model="filePath" />
+        <SupabaseView :schema="app.schema" table-name="tasks" view-type="table" />
     </div>
-    <div>filePath: {{ filePath }}</div>
 </template>
