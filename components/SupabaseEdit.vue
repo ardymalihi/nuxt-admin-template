@@ -192,7 +192,7 @@ onMounted(async () => {
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"></div>
     <div class="flex">
         <!-- Right Sidebar (Initially Hidden) -->
-        <div class="w-[400px] border bg-stone-50 rounded-md shadow-lg z-50 shadow-gray-600 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
+        <div class="w-[480px] border bg-stone-50 rounded-md shadow-lg z-50 shadow-gray-600 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
             :class="{ 'translate-x-full': !showSidebar }">
 
             <div class="flex flex-col h-[100%] overflow-y-auto">

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="props.modelValue" class="flex flex-row">
+  <div v-if="props.modelValue" class="flex flex-row justify-between">
     <a :href="`/api/download?file=${props.modelValue}`" target="_blank" class="text-xs m-1 text-blue-500">{{ props.modelValue }}</a>
     <button @click="cleanUpload" type="button"
       class="focus:shadow-outline h-7 rounded bg-cyan-500 text-xs pl-2 pr-2 text-white hover:bg-cyan-600 focus:outline-none">

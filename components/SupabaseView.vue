@@ -58,9 +58,9 @@ function formatValue(row: any, column: IColumnConfig): string {
         }
     } else if (column.type === "image_url") {
         if (row[column.fieldName]) {
-            const size = `${props.viewType === 'card' ? '200px' : '40px'}`;
+            const size = `${props.viewType === 'card' ? '180px' : (props.compact ? '64px' : '120px')}`;
             const align = `${props.viewType === 'card' ? 'justify-center items-center' : ''}`;
-            value = `<div class="flex ${align} h-[${size}]"><img class="h-[${size}] rounded-md" src="${row[column.fieldName]}" /></div>`
+            value = `<div class="${align} w-[${size}]"><img width="${size}" class="w-[${size}] rounded-md" src="${row[column.fieldName]}" /></div>`
         }
     } else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
@@ -295,7 +295,7 @@ await load();
         </div>
     </div>
     <!-- Table View Type -->
-    <table v-if="props.viewType === 'table'" class="table-fixed w-[100%] shadow-sm rounded-md overflow-hidden">
+    <table v-if="props.viewType === 'table'" class="border bg-white table-fixed w-[100%] shadow-sm rounded-md overflow-hidden">
         <thead :class="$props.compact ? 'bg-gray-200 h-[30px]' : `bg-cyan-500 h-[60px]`">
             <tr :class="$props.compact ? 'text-left text-xs' : `text-left text-white`">
                 <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
@@ -324,13 +324,16 @@ await load();
             <template v-for="(row, index) in rows">
                 <tr class="border hover:bg-stone-50" :class="props.compact ? 'h-[30px] text-xs' : 'h-[50px]'">
                     <td v-if="props.showCollections && (collections.length > 0)" class="p-2">
-                        <button @click="rowDetail(String((row as any)[filedIdName]))"
+                        <button v-if="expandedId !== String((row as any)[filedIdName])" @click="rowDetail(String((row as any)[filedIdName]))"
                             class="focus:shadow-outline rounded p-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
                             <!-- arrow right-->
-                            <svg v-if="expandedId !== String((row as any)[filedIdName])" xmlns="http://www.w3.org/2000/svg"
+                            <svg  xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
+                        </button>
+                        <button v-else="expandedId !== String((row as any)[filedIdName])" @click="rowDetail(String((row as any)[filedIdName]))"
+                            class="focus:shadow-outline p-2 text-white bg-cyan-500 rounded-full focus:outline-none">
                             <!-- arrow down-->
                             <svg v-if="expandedId === String((row as any)[filedIdName])" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -371,7 +374,7 @@ await load();
                     <td :colspan="getTotalColumns()">
                         <!-- detail section -->
                         <section class="bg-stone-50 p-5 border-none">
-                            <SupabaseView :compact="true" table-name="tasks_progress" :schema="props.schema" view-type="table" :editable="false" :show-collections="false"  /> 
+                            <SupabaseView :compact="true" table-name="tasks" :schema="props.schema" view-type="table" :editable="false" :show-collections="false"  /> 
                         </section>
                     </td>
                 </tr>
@@ -382,7 +385,7 @@ await load();
     <!-- Card View Type -->
     <div v-if="props.viewType === 'card'" class="flex flex-wrap">
         <div v-for="(row, index) in rows"
-            class="flex flex-col border bg-white rounded-md p-2 m-2 w-[300px]">
+            class="flex flex-col border bg-white rounded-md p-2 m-2 w-[200px] justify-center items-center">
             <div class="p-2 text" :class="getColumnVisibility(column)" v-for="(column, index) in getOrderedCards()"
                 :key="index">
                 <div :class="`${getCardStyle(column)}`" v-html="formatValue(row, column)"></div>
