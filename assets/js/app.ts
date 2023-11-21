@@ -20,8 +20,13 @@ export interface IColumnConfig {
     validations?: ColumnValidationHandler[];
 }
 
+export interface ICollection {
+    title: string;
+    tableName: string;
+    fieldName: string;
+}
+
 export interface ITableConfig {
-    editable: boolean;
     columns: IColumnConfig[] | null;
     validation?: FormValidationHandler;
 }
@@ -44,7 +49,6 @@ export const app: IAppConfig = {
     table: {
         tasks:
         {
-            editable: true,
             validation: async (model) => {
                 if (model.title === "task123") {
                     return "This task is already taken";
@@ -147,7 +151,6 @@ export const app: IAppConfig = {
             ]
         },
         tasks_progress: {
-            editable: true,
             columns: [
                 {
                     fieldName: "id",

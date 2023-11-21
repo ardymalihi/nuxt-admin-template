@@ -1,24 +1,37 @@
 <script setup lang="ts">
 import SupabaseEdit from '~/components/SupabaseEdit.vue';
-import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
+import { ICollection, IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
 
 const props = defineProps<{
     schema: ISchema;
     tableName: TableNames;
-    viewType: 'table' | 'card' | 'detail'
+    viewType: 'table' | 'card' | 'detail';
+    editable: boolean
 }>();
 
 const rows = ref<any[]>([]);
 const overlayOpen = ref(false);
 
 const deleteModal = ref(false);
-const editMode = ref(true);
+const editMode = ref(false);
 const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
 const supabaseEdit = ref<InstanceType<typeof SupabaseEdit> | null>(null);
 const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
 const currentOrderFieldName = ref(filedIdName);
 const isAscending = ref(true);
+
+const collections = ref(getCollections());
+
+function getCollections(): ICollection[] {
+    return [
+        {
+            fieldName: "task_id",
+            tableName: "task_progress",
+            title: "Task"
+        }
+    ]
+}
 
 const client = useSupabaseClient();
 
@@ -266,15 +279,17 @@ await load();
     <table v-if="props.viewType === 'table'" class="table-fixed w-[100%] shadow-md rounded-md overflow-hidden">
         <thead class="bg-cyan-500 h-[60px]">
             <tr class="text-left text-white">
+                <th v-if="collections.length > 0" class="p-2 w-[58px]">
+                </th>
                 <th @click="orderBy(column)" class="p-2" :class="getColumnVisibility(column)"
                     v-for="(column, index) in getOrderedColumns()">
                     <span class="cursor-pointer">{{ column.title }}</span>
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span>
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span>
                 </th>
-                <th v-if="props.schema.table[props.tableName].editable" class="p-2 w-[58px]">
+                <th v-if="props.editable" class="p-2 w-[58px]">
                 </th>
-                <th v-if="props.schema.table[props.tableName].editable" class="p-2 w-[58px]">
+                <th v-if="props.editable" class="p-2 w-[58px]">
                     <!-- Insert Button-->
                     <button @click="showInsertModal"
                         class="w-full focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
@@ -288,11 +303,14 @@ await load();
         </thead>
         <tbody class="bg-white">
             <tr v-for="(row, index) in rows" class="border hover:bg-stone-50 h-[50px]">
+                <td class="p-2">
+                    <div>></div>
+                </td>
                 <td class="p-2" :class="getColumnVisibility(column)" v-for="(column, index) in getOrderedColumns()"
                     :key="index">
                     <div v-html="formatValue(row, column)"></div>
                 </td>
-                <td v-if="props.schema.table[props.tableName].editable" class="p-2">
+                <td v-if="props.editable" class="p-2">
                     <!-- Delete Button-->
                     <button @click="openDeleteModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
@@ -303,7 +321,7 @@ await load();
                         </svg>
                     </button>
                 </td>
-                <td v-if="props.schema.table[props.tableName].editable" class="p-2">
+                <td v-if="props.editable" class="p-2">
                     <!-- Edit Button-->
                     <button @click="showEditModal(String((row as any)[filedIdName]))"
                         class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
