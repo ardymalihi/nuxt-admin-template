@@ -161,12 +161,19 @@ export const app: IAppConfig = {
                     formOrder: 1,
                 },
                 {
-                    fieldName: "created_date",
-                    title: "Created Date",
-                    type: "date",
+                    fieldName: "percentage",
+                    title: "% Completed",
+                    type: "number",
                     formOrder: 2,
                     required: true,
-                    columnOrder: 1,
+                    columnOrder: 2,
+                    validations: [
+                        (row, column, value) => {
+                            if (Number(value) < 0 || Number(value) > 100) {
+                                return "percentage should be between 0 and 100";
+                            }
+                        }
+                    ]
                 },
                 {
                     fieldName: "task_id",
@@ -179,7 +186,7 @@ export const app: IAppConfig = {
                         displayFieldName: "title",
                     },
                     formOrder: 3,
-                    columnOrder: 2,
+                    columnOrder: 1,
                     required: true,
                 },
             ]

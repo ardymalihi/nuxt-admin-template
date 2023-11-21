@@ -47,6 +47,8 @@ function getInputType(column: IColumnConfig): string {
         return "checkbox";
     } else if (column.type === "date") {
         return "date";
+    } else if (column.type === "number") {
+        return "number";
     }
     return "text";
 }
@@ -88,6 +90,7 @@ function checkFormValidation() {
 }
 
 async function handleSubmit() {
+    let canBeSubmitted = false;
     checkFormValidation();
     if (!invalid.value) {
         if (props.schema.table[props.tableName].validation) {
@@ -96,10 +99,15 @@ async function handleSubmit() {
                 formValidationError.value = formValidationMessage;
                 setTimeout(() => formValidationError.value = "", 4000);
             } else {
-                console.log("submitted form", JSON.stringify(props.model));
-                emit("formSubmitted", { model: props.model });
-                crudOverlayOpen.value = false;
+                canBeSubmitted = true;
             }
+        } else {
+            canBeSubmitted = true;
+        }
+
+        if (canBeSubmitted) {
+            emit("formSubmitted", { model: props.model });
+            crudOverlayOpen.value = false;
         }
     }
 }
@@ -227,7 +235,8 @@ onMounted(async () => {
                                         @error="handleImageError($event, column, props.model[column.fieldName])" />
                                 </div>
                                 <div v-else-if="column.type === 'file_url'">
-                                    <FileUploader :allowedExtensions="['.pdf']" uploadFolder="test" :id="column.fieldName" v-model="props.model[column.fieldName]"
+                                    <FileUploader :allowedExtensions="['.pdf']" uploadFolder="test" :id="column.fieldName"
+                                        v-model="props.model[column.fieldName]"
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" />
                                 </div>
                                 <div v-else="column.type === 'string'">
