@@ -190,12 +190,12 @@ onMounted(async () => {
     <!-- Overlay -->
     <div v-if="crudOverlayOpen"
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"></div>
-    <div class="flex">
+    <div class="flex flex-col">
         <!-- Right Sidebar (Initially Hidden) -->
-        <div class="w-[480px] border bg-stone-50 rounded-md shadow-lg z-50 shadow-gray-600 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
+        <div class="flex flex-col w-[350px] border bg-stone-100 rounded-md shadow-lg z-50 shadow-gray-600 fixed top-0 right-0 h-full p-4 transform transition-transform duration-300 ease-in-out"
             :class="{ 'translate-x-full': !showSidebar }">
 
-            <div class="flex flex-col h-[100%] overflow-y-auto">
+            <div class="flex flex-col h-[100%] overflow-y-auto text-xs">
                 <ClientOnly fallback-tag="span" fallback="Loading form...">
                     <form @submit.prevent="handleSubmit">
                         <div v-for="column in getColumns()" @focusout="checkFormValidation">
@@ -260,13 +260,14 @@ onMounted(async () => {
                         </div>
                     </form>
                 </ClientOnly>
-                <div class="flex mb-2 justify-center">
+                
+            </div>
+            <div class="flex mb-2 justify-center">
                     <button @click="handleSubmit" type="submit"
                         class="m-1 p-2 focus:shadow-outline rounded bg-cyan-500 px-2 py-2 text-white hover:bg-cyan-600 focus:outline-none">Submit</button>
                     <button @click="closeSidebar"
                         class="m-1 p-2 focus:shadow-outline rounded bg-red-500 px-2 py-2 text-white hover:bg-red-600 focus:outline-none">Close</button>
                 </div>
-            </div>
             <!-- Sidebar content goes here -->
         </div>
     </div>

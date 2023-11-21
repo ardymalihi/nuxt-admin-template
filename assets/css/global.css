@@ -1,0 +1,11 @@
+html {
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  width: 10px; /* Adjust the width as needed */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(6, 182, 212, 0.9); /* Set the scrollbar thumb color with transparency */
+}
