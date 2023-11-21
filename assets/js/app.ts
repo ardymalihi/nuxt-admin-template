@@ -22,7 +22,7 @@ export interface IColumnConfig {
 
 export interface ITableConfig {
     editable: boolean;
-    columns: IColumnConfig[] | null,
+    columns: IColumnConfig[] | null;
     validation?: FormValidationHandler;
 }
 

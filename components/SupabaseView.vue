@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CrudSidebar from '~/components/CrudSidebar.vue';
+import SupabaseEdit from '~/components/SupabaseEdit.vue';
 import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
 
 const props = defineProps<{
@@ -12,10 +12,10 @@ const rows = ref<any[]>([]);
 const overlayOpen = ref(false);
 
 const deleteModal = ref(false);
-const crudSidebarEditMode = ref(true);
+const editMode = ref(true);
 const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
-const crudSidebar = ref<InstanceType<typeof CrudSidebar> | null>(null);
+const supabaseEdit = ref<InstanceType<typeof SupabaseEdit> | null>(null);
 const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
 const currentOrderFieldName = ref(filedIdName);
 const isAscending = ref(true);
@@ -122,18 +122,18 @@ async function load() {
 }
 
 function showInsertModal() {
-    crudSidebarEditMode.value = false;
+    editMode.value = false;
     currentId.value = undefined;
     currentRow.value = createEmptyRow();
-    crudSidebar.value?.openSidebar();
+    supabaseEdit.value?.openSidebar();
 }
 
 function showEditModal(id: string) {
-    crudSidebarEditMode.value = true;
+    editMode.value = true;
     currentId.value = id;
     const found = rows.value.find(r => String(r[filedIdName]) === String(id));
     currentRow.value = { ...createEmptyRow(), ...found };
-    crudSidebar.value?.openSidebar();
+    supabaseEdit.value?.openSidebar();
 }
 
 function createEmptyRow(): any {
@@ -164,7 +164,7 @@ function getUpdateReadyObject(obj: any) {
 }
 
 async function handleSubmit({ model }: any) {
-    if (crudSidebarEditMode.value) {
+    if (editMode.value) {
         const updateObject = getUpdateReadyObject(model);
         const { error, data } = await client.from(props.tableName).update(updateObject as never).eq(filedIdName, String(currentId.value)).select();
         if (error) {
@@ -176,7 +176,7 @@ async function handleSubmit({ model }: any) {
         currentRow.value = createEmptyRow();
         currentId.value = undefined;
     }
-    crudSidebar.value?.closeSidebar();
+    supabaseEdit.value?.closeSidebar();
     await load();
 }
 
@@ -226,7 +226,7 @@ await load();
     <div v-if="overlayOpen" 
         class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-10 overflow-hidden bg-gray-700 opacity-60"
         @click="closeOverlay"></div>
-    <CrudSidebar ref="crudSidebar" :schema="props.schema" :table-name="props.tableName" :edit-mode="crudSidebarEditMode"
+    <SupabaseEdit ref="supabaseEdit" :schema="props.schema" :table-name="props.tableName" :edit-mode="editMode"
         :model="currentRow" @form-submitted="handleSubmit" />
     <!-- Delete Modal -->
     <div v-if="deleteModal"
