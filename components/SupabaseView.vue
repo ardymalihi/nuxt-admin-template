@@ -85,7 +85,11 @@ function rowDetail(id: string) {
     if (!expandedId.value) {
         expandedId.value = id;
     } else {
-        expandedId.value = undefined;
+        if (expandedId.value === id) {
+            expandedId.value = undefined;
+        } else {
+            expandedId.value = id;
+        }
     }
 
 }
