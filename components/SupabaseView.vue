@@ -23,7 +23,11 @@ const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.typ
 const currentOrderFieldName = ref(filedIdName);
 const isAscending = ref(true);
 const expandedId = ref<string>();
-const tableColspan = ref((props.editable ? 3 : 0) + (getOrderedColumns() || []).length);
+const orderedColumns = ref<IColumnConfig[]>(getOrderedColumns() ?? []);
+
+const tableColspan = computed(() => {
+    return (props.editable ? 3 : 0) + orderedColumns.value.length;
+})
 
 const collections = ref(getCollections());
 
@@ -289,7 +293,7 @@ await load();
                 <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
                 </th>
                 <th @click="orderBy(column)" class="p-2"
-                    v-for="(column, index) in getOrderedColumns()">
+                    v-for="(column, index) in orderedColumns">
                     <span class="cursor-pointer">{{ column.title }}</span>
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span>
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span>
@@ -330,7 +334,7 @@ await load();
 
                         </button>
                     </td>
-                    <td class="p-2 min-w-[100px]" v-for="(column, index) in getOrderedColumns()"
+                    <td class="p-2 min-w-[100px]" v-for="(column, index) in orderedColumns"
                         :key="index">
                         <div v-html="formatValue(row, column)"></div>
                     </td>
