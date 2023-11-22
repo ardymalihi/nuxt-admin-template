@@ -283,9 +283,9 @@ await load();
     </div>
     <!-- Table View Type -->
     <div class="overflow-auto">
-    <table v-if="props.viewType === 'table'" class="w-full border bg-white shadow-sm rounded-md overflow-hidden">
-        <thead :class="$props.compact ? 'bg-gray-200 h-[30px]' : `bg-cyan-500 h-[60px]`">
-            <tr :class="$props.compact ? 'text-left text-xs' : `text-left text-white`">
+    <table v-if="props.viewType === 'table'" class="w-full border bg-white shadow-sm rounded-md overflow-hidden" :class="props.compact ? 'text-xs' : `text-sm`">
+        <thead :class="props.compact ? 'bg-gray-400 h-[30px]' : `bg-cyan-500 h-[60px]`">
+            <tr class="text-left text-white">
                 <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
                 </th>
                 <th @click="orderBy(column)" class="p-2"
@@ -310,7 +310,7 @@ await load();
         </thead>
         <tbody class="bg-white">
             <template v-for="(row, index) in rows">
-                <tr class="border hover:bg-stone-50" :class="props.compact ? 'h-[30px] text-xs' : 'h-[50px]'">
+                <tr class="border hover:bg-stone-50">
                     <td v-if="props.showCollections && (collections.length > 0)" class="p-2">
                         <button v-if="expandedId !== String((row as any)[filedIdName])" @click="rowDetail(String((row as any)[filedIdName]))"
                             class="focus:shadow-outline rounded p-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
@@ -330,7 +330,7 @@ await load();
 
                         </button>
                     </td>
-                    <td class="p-2" v-for="(column, index) in getOrderedColumns()"
+                    <td class="p-2 min-w-[100px]" v-for="(column, index) in getOrderedColumns()"
                         :key="index">
                         <div v-html="formatValue(row, column)"></div>
                     </td>
@@ -361,7 +361,7 @@ await load();
                 <tr v-if="expandedId && (expandedId === String((row as any)[filedIdName]))">
                     <td :colspan="tableColspan">
                         <!-- detail section -->
-                        <section class="bg-stone-50 p-5 border-none">
+                        <section class="bg-gray-500 p-5 border-none">
                             <SupabaseView :compact="true" table-name="tasks" :schema="props.schema" view-type="table" :editable="false" :show-collections="false"  /> 
                         </section>
                     </td>
