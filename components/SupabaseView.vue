@@ -25,6 +25,9 @@ const isAscending = ref(true);
 const expandedId = ref<string>();
 const orderedColumns = ref<IColumnConfig[]>(getOrderedColumns() ?? []);
 
+const activeBreakpoint = ref<string>(getActiveTailwindBreakpoint());
+
+
 const tableColspan = computed(() => {
     return (props.editable ? 3 : 0) + orderedColumns.value.length;
 })
@@ -216,7 +219,14 @@ async function handleSubmit({ model }: any) {
 }
 
 function getOrderedColumns() {
-    return props.schema.table[props.tableName].columns?.filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder);
+    let result =  props.schema.table[props.tableName].columns?.filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder) || [];
+    const currentScreenType = getActiveTailwindBreakpoint();
+    if (currentScreenType === "mobile") {
+        result = result.slice(0,2);
+    } else if (currentScreenType === "tablet") {
+        result = result.slice(0,3);
+    }
+    return result;
 }
 
 function getOrderedCards() {
@@ -242,6 +252,45 @@ function getCardStyle(column: IColumnConfig) {
         return "text-center p-3 rounded-md text-sm font-medium text-gray-900";
     }
 }
+
+function getActiveTailwindBreakpoint() {
+    let result = "mobile";
+    if (typeof window !== 'undefined') {
+    const innerWidth = window.innerWidth;
+
+    if (innerWidth > 640 && innerWidth <1024) {
+        result = "tablet";
+    } else if (innerWidth > 1024) {
+        result = "web";
+    }
+    }
+    return result; // Default to 'xs' if no breakpoint is found
+}
+
+// Define the method to log the window size
+const setActiveBreakpoint = () => {
+    const currentActiveBreakpoint = getActiveTailwindBreakpoint();
+    if (currentActiveBreakpoint !== activeBreakpoint.value) {
+        activeBreakpoint.value = currentActiveBreakpoint;
+        orderedColumns.value = getOrderedColumns() || [];
+        console.log("Active Breakpoint:", activeBreakpoint.value);
+    }
+};
+
+// Call logWindowSize on component mount
+onMounted(setActiveBreakpoint);
+
+// Attach the event listener to the window's resize event
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', setActiveBreakpoint);
+}
+
+// Cleanup the event listener when the component is unmounted
+onBeforeUnmount(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', setActiveBreakpoint);
+    }
+});
 
 await load();
 </script>
@@ -287,100 +336,102 @@ await load();
     </div>
     <!-- Table View Type -->
     <div class="overflow-auto">
-    <table v-if="props.viewType === 'table'" class="w-full border bg-white shadow-sm rounded-md overflow-hidden" :class="props.compact ? 'text-xs' : `text-sm`">
-        <thead :class="props.compact ? 'bg-gray-400 h-[30px]' : `bg-cyan-500 h-[60px]`">
-            <tr class="text-left text-white">
-                <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
-                </th>
-                <th @click="orderBy(column)" class="p-2"
-                    v-for="(column, index) in orderedColumns">
-                    <span class="cursor-pointer">{{ column.title }}</span>
-                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span>
-                    <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span>
-                </th>
-                <th v-if="props.editable" class="p-2 w-[58px]">
-                </th>
-                <th v-if="props.editable" class="p-2 w-[58px]">
-                    <!-- Insert Button-->
-                    <button @click="showInsertModal"
-                        class="w-full focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                    </button>
-                </th>
-            </tr>
-        </thead>
-        <tbody class="bg-white">
-            <template v-for="(row, index) in rows">
-                <tr class="border hover:bg-stone-50">
-                    <td v-if="props.showCollections && (collections.length > 0)" class="p-2">
-                        <button v-if="expandedId !== String((row as any)[filedIdName])" @click="rowDetail(String((row as any)[filedIdName]))"
-                            class="focus:shadow-outline rounded p-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
-                            <!-- arrow right-->
-                            <svg  xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        <table v-if="props.viewType === 'table'" class="w-full border bg-white shadow-sm rounded-md overflow-hidden"
+            :class="props.compact ? 'text-xs' : `text-sm`">
+            <thead :class="props.compact ? 'bg-gray-400 h-[30px]' : `bg-cyan-500 h-[60px]`">
+                <tr class="text-left text-white">
+                    <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
+                    </th>
+                    <th @click="orderBy(column)" class="p-2" v-for="(column, index) in orderedColumns">
+                        <span class="cursor-pointer">{{ column.title }}</span>
+                        <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span>
+                        <span v-if="column.fieldName === currentOrderFieldName && isAscending === false">↓</span>
+                    </th>
+                    <th v-if="props.editable" class="p-2 w-[58px]">
+                    </th>
+                    <th v-if="props.editable" class="p-2 w-[58px]">
+                        <!-- Insert Button-->
+                        <button @click="showInsertModal"
+                            class="w-full focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                         </button>
-                        <button v-else="expandedId !== String((row as any)[filedIdName])" @click="rowDetail(String((row as any)[filedIdName]))"
-                            class="focus:shadow-outline p-2 text-white bg-cyan-500 rounded-full focus:outline-none">
-                            <!-- arrow down-->
-                            <svg v-if="expandedId === String((row as any)[filedIdName])" xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white">
+                <template v-for="(row, index) in rows">
+                    <tr class="border hover:bg-stone-50">
+                        <td v-if="props.showCollections && (collections.length > 0)" class="p-2">
+                            <button v-if="expandedId !== String((row as any)[filedIdName])"
+                                @click="rowDetail(String((row as any)[filedIdName]))"
+                                class="focus:shadow-outline rounded p-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
+                                <!-- arrow right-->
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                            <button v-else="expandedId !== String((row as any)[filedIdName])"
+                                @click="rowDetail(String((row as any)[filedIdName]))"
+                                class="focus:shadow-outline p-2 text-white bg-cyan-500 rounded-full focus:outline-none">
+                                <!-- arrow down-->
+                                <svg v-if="expandedId === String((row as any)[filedIdName])"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
 
-                        </button>
-                    </td>
-                    <td class="p-2 min-w-[100px]" v-for="(column, index) in orderedColumns"
-                        :key="index">
-                        <div v-html="formatValue(row, column)"></div>
-                    </td>
-                    <td v-if="props.editable" class="p-2">
-                        <!-- Delete Button-->
-                        <button @click="openDeleteModal(String((row as any)[filedIdName]))"
-                            class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                            </svg>
-                        </button>
-                    </td>
-                    <td v-if="props.editable" class="p-2">
-                        <!-- Edit Button-->
-                        <button @click="showEditModal(String((row as any)[filedIdName]))"
-                            class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                            </svg>
-                        </button>
-                    </td>
-                </tr>
-                <transition name="slide">
-                <tr v-if="expandedId && (expandedId === String((row as any)[filedIdName]))">
-                    <td :colspan="tableColspan">
-                        <!-- detail section -->
-                        <section class="bg-gray-500 p-5 border-none">
-                            <SupabaseView :compact="true" table-name="tasks" :schema="props.schema" view-type="table" :editable="false" :show-collections="false"  /> 
-                        </section>
-                    </td>
-                </tr>
-            </transition>
-            </template>
-        </tbody>
-    </table>
+                            </button>
+                        </td>
+                        <td class="p-2 min-w-[100px]" v-for="(column, index) in orderedColumns" :key="index">
+                            <div v-html="formatValue(row, column)"></div>
+                        </td>
+                        <td v-if="props.editable" class="p-2">
+                            <!-- Delete Button-->
+                            <button @click="openDeleteModal(String((row as any)[filedIdName]))"
+                                class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                            </button>
+                        </td>
+                        <td v-if="props.editable" class="p-2">
+                            <!-- Edit Button-->
+                            <button @click="showEditModal(String((row as any)[filedIdName]))"
+                                class="w-full focus:shadow-outline rounded px-2 py-2 text-cyan-500 hover:text-white hover:bg-cyan-500 hover:rounded-full focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <transition name="slide">
+                        <tr v-if="expandedId && (expandedId === String((row as any)[filedIdName]))">
+                            <td :colspan="tableColspan">
+                                <!-- detail section -->
+                                <section class="bg-gray-500 p-5 border-none">
+                                    <SupabaseView :compact="true" table-name="tasks" :schema="props.schema"
+                                        view-type="table" :editable="false" :show-collections="false" />
+                                </section>
+                            </td>
+                        </tr>
+                    </transition>
+                </template>
+            </tbody>
+        </table>
     </div>
     <!-- Card View Type -->
     <div v-if="props.viewType === 'card'" class="flex flex-wrap">
         <div v-for="(row, index) in rows"
             class="flex flex-col border bg-white rounded-md p-2 m-2 w-[200px] justify-center items-center">
-            <div class="p-2 text" v-for="(column, index) in getOrderedCards()"
-                :key="index">
+            <div class="p-2 text" v-for="(column, index) in getOrderedCards()" :key="index">
                 <div :class="`${getCardStyle(column)}`" v-html="formatValue(row, column)"></div>
             </div>
             <div v-if="props.editable" class="p-1 mt-auto w-full text-right">
@@ -404,8 +455,7 @@ await load();
                 </button>
             </div>
         </div>
-        <div v-if="props.editable"
-            class="flex border bg-cyan-500 rounded-md p-2 m-2 w-[300px] justify-center items-center">
+        <div v-if="props.editable" class="flex border bg-cyan-500 rounded-md p-2 m-2 w-[300px] justify-center items-center">
             <!-- Insert Button-->
             <button @click="showInsertModal"
                 class="focus:shadow-outline rounded  px-2 py-2 text-white hover:bg-cyan-600 hover:rounded-full focus:outline-none">
