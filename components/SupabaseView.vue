@@ -23,6 +23,7 @@ const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.typ
 const currentOrderFieldName = ref(filedIdName);
 const isAscending = ref(true);
 const expandedId = ref<string>();
+const tableColspan = ref((props.editable ? 3 : 0) + (getOrderedColumns() || []).length);
 
 const collections = ref(getCollections());
 
@@ -58,9 +59,9 @@ function formatValue(row: any, column: IColumnConfig): string {
         }
     } else if (column.type === "image_url") {
         if (row[column.fieldName]) {
-            const size = `${props.viewType === 'card' ? '180px' : (props.compact ? '64px' : '120px')}`;
+            const size = `${props.viewType === 'card' ? '180px' : (props.compact ? '32px' : '64px')}`;
             const align = `${props.viewType === 'card' ? 'justify-center items-center' : ''}`;
-            value = `<div class="${align} w-[${size}]"><img width="${size}" class="w-[${size}] rounded-md" src="${row[column.fieldName]}" /></div>`
+            value = `<div class="${align} w-[${size}]"><img width="${size}" class="w-[${size}]  rounded-sm" src="${row[column.fieldName]}" /></div>`
         }
     } else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
@@ -150,14 +151,6 @@ async function load() {
     rows.value = data as any[];
 }
 
-function getTotalColumns(): number {
-    let total = (getOrderedColumns() || []).length;
-    if (props.editable) {
-        total = total + 3;
-    }
-    return total;
-}
-
 function showInsertModal() {
     editMode.value = false;
     currentId.value = undefined;
@@ -226,16 +219,6 @@ function getOrderedCards() {
     return props.schema.table[props.tableName].columns?.filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder).slice(0, 3);
 }
 
-function getColumnVisibility(column: IColumnConfig): string {
-    let result = '';
-    if (column.columnOrder >= 3 && column.columnOrder <= 4) {
-        result = "hidden md:table-cell";
-    } else if (column.columnOrder > 4) {
-        result = "hidden lg:table-cell";
-    }
-    return result;
-}
-
 async function orderBy(column: IColumnConfig) {
     if (currentOrderFieldName.value === column.fieldName) {
         if (isAscending) {
@@ -299,12 +282,13 @@ await load();
         </div>
     </div>
     <!-- Table View Type -->
-    <table v-if="props.viewType === 'table'" class="border bg-white table-fixed w-[100%] shadow-sm rounded-md overflow-hidden">
+    <div class="overflow-auto">
+    <table v-if="props.viewType === 'table'" class="w-full border bg-white shadow-sm rounded-md overflow-hidden">
         <thead :class="$props.compact ? 'bg-gray-200 h-[30px]' : `bg-cyan-500 h-[60px]`">
             <tr :class="$props.compact ? 'text-left text-xs' : `text-left text-white`">
                 <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
                 </th>
-                <th @click="orderBy(column)" class="p-2" :class="getColumnVisibility(column)"
+                <th @click="orderBy(column)" class="p-2"
                     v-for="(column, index) in getOrderedColumns()">
                     <span class="cursor-pointer">{{ column.title }}</span>
                     <span v-if="column.fieldName === currentOrderFieldName && isAscending === true">↑</span>
@@ -346,7 +330,7 @@ await load();
 
                         </button>
                     </td>
-                    <td class="p-2" :class="getColumnVisibility(column)" v-for="(column, index) in getOrderedColumns()"
+                    <td class="p-2" v-for="(column, index) in getOrderedColumns()"
                         :key="index">
                         <div v-html="formatValue(row, column)"></div>
                     </td>
@@ -375,7 +359,7 @@ await load();
                 </tr>
                 <transition name="slide">
                 <tr v-if="expandedId && (expandedId === String((row as any)[filedIdName]))">
-                    <td :colspan="getTotalColumns()">
+                    <td :colspan="tableColspan">
                         <!-- detail section -->
                         <section class="bg-stone-50 p-5 border-none">
                             <SupabaseView :compact="true" table-name="tasks" :schema="props.schema" view-type="table" :editable="false" :show-collections="false"  /> 
@@ -386,11 +370,12 @@ await load();
             </template>
         </tbody>
     </table>
+    </div>
     <!-- Card View Type -->
     <div v-if="props.viewType === 'card'" class="flex flex-wrap">
         <div v-for="(row, index) in rows"
             class="flex flex-col border bg-white rounded-md p-2 m-2 w-[200px] justify-center items-center">
-            <div class="p-2 text" :class="getColumnVisibility(column)" v-for="(column, index) in getOrderedCards()"
+            <div class="p-2 text" v-for="(column, index) in getOrderedCards()"
                 :key="index">
                 <div :class="`${getCardStyle(column)}`" v-html="formatValue(row, column)"></div>
             </div>
