@@ -42,7 +42,7 @@ export interface IAppConfig {
 }
 
 
-export type TableNames = 'tasks' | 'tasks_progress';
+export type TableNames = 'tasks' | 'tasks_progress' | string;
 
 export const app: IAppConfig = {
     schema: {

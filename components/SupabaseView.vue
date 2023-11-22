@@ -336,9 +336,10 @@ await load();
     </div>
     <!-- Table View Type -->
     <div class="overflow-auto">
-        <table v-if="props.viewType === 'table'" class="w-full border bg-white shadow-sm rounded-md overflow-hidden"
-            :class="props.compact ? 'text-xs' : `text-sm`">
-            <thead :class="props.compact ? 'bg-gray-400 h-[30px]' : `bg-cyan-500 h-[60px]`">
+    <ClientOnly>
+        <table v-if="props.viewType === 'table'" class="w-full bg-white shadow-sm overflow-hidden"
+            :class="props.compact ? 'text-xs' : `text-sm rounded-md`">
+            <thead :class="props.compact ? 'bg-gray-600 h-[30px]' : `bg-cyan-500 h-[60px]`">
                 <tr class="text-left text-white">
                     <th v-if="props.showCollections && (collections.length > 0)" class="p-2 w-[58px]">
                     </th>
@@ -363,7 +364,7 @@ await load();
             </thead>
             <tbody class="bg-white">
                 <template v-for="(row, index) in rows">
-                    <tr class="border hover:bg-stone-50">
+                    <tr class="hover:bg-stone-50">
                         <td v-if="props.showCollections && (collections.length > 0)" class="p-2">
                             <button v-if="expandedId !== String((row as any)[filedIdName])"
                                 @click="rowDetail(String((row as any)[filedIdName]))"
@@ -413,19 +414,23 @@ await load();
                         </td>
                     </tr>
                     <transition name="slide">
+                    
                         <tr v-if="expandedId && (expandedId === String((row as any)[filedIdName]))">
-                            <td :colspan="tableColspan">
+                            <td :colspan="tableColspan" class="bg-gray-400 border-none">
                                 <!-- detail section -->
-                                <section class="bg-gray-500 p-5 border-none">
-                                    <SupabaseView :compact="true" table-name="tasks" :schema="props.schema"
-                                        view-type="table" :editable="false" :show-collections="false" />
+                                <section class="bg-gray-400 p-5 border-none">
+                                    <SupabaseTab />
+                                    <!-- <SupabaseView :compact="true" table-name="tasks" :schema="props.schema"
+                                        view-type="table" :editable="false" :show-collections="false" /> -->
                                 </section>
                             </td>
                         </tr>
+                    
                     </transition>
                 </template>
             </tbody>
         </table>
+    </ClientOnly>
     </div>
     <!-- Card View Type -->
     <div v-if="props.viewType === 'card'" class="flex flex-wrap">
