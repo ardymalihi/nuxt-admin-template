@@ -15,20 +15,14 @@ export interface IColumnConfig {
         idFieldName: string;
         displayFieldName: string;
     }
-    editable?: boolean;
     customFormatter?: CustomFormatHandler;
     validations?: ColumnValidationHandler[];
 }
 
-export interface ICollection {
-    title: string;
-    tableName: string;
-    fieldName: string;
-}
-
 export interface ITableConfig {
-    columns: IColumnConfig[] | null;
+    columns: IColumnConfig[];
     validation?: FormValidationHandler;
+    title: string;
 }
 
 export interface ISchema {
@@ -49,6 +43,7 @@ export const app: IAppConfig = {
     table: {
         tasks:
         {
+            title: "Tasks",
             validation: async (model) => {
                 if (model.title === "task123") {
                     return "This task is already taken";
@@ -151,6 +146,7 @@ export const app: IAppConfig = {
             ]
         },
         tasks_progress: {
+            title: "Tasks Completion",
             columns: [
                 {
                     fieldName: "id",
@@ -189,7 +185,7 @@ export const app: IAppConfig = {
                     columnOrder: 1,
                     required: true,
                 },
-            ]
+            ],
         }
     }
 }

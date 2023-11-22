@@ -32,7 +32,7 @@ const validationModel: any = ref({});
 const formValidationError = ref("");
 
 function getColumns(): IColumnConfig[] {
-    return props.schema.table[props.tableName].columns?.filter(c => c.type !== "id").sort((a, b) => a.formOrder - b.formOrder) ?? [];
+    return props.schema.table[props.tableName].columns.filter(c => c.type !== "id").sort((a, b) => a.formOrder - b.formOrder) ?? [];
 }
 
 const openSidebar = () => {
@@ -62,7 +62,7 @@ function closeSidebar() {
 function checkFormValidation() {
     validationModel.value = {};
     let isValid = true;
-    for (const column of props.schema.table[props.tableName].columns ?? []) {
+    for (const column of props.schema.table[props.tableName].columns) {
         if (column.required && String(props.model[column.fieldName] ?? "").length <= 0) {
             validationModel.value[column.fieldName] = `${column.title} is required`;
             isValid = false;
@@ -131,7 +131,7 @@ function sortByProperties(data: any[], ...sortProperties: ISortConfig[]): any[] 
 
 async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
     let result: ILookupItem[] = [];
-    const filedIdName = props.schema.table[props.tableName].columns?.find(c => c.type === "id")?.fieldName ?? "id";
+    const filedIdName = props.schema.table[props.tableName].columns.find(c => c.type === "id")?.fieldName ?? "id";
     const fieldNames = column.lookup?.displayFieldName.split(",");
     const { data, error } = await client.from(column.lookup?.name ?? "").select(`${filedIdName}, ${column.lookup?.displayFieldName}`);
     for (const row of data as any[]) {
@@ -156,7 +156,7 @@ async function getLookupItems(column: IColumnConfig): Promise<ILookupItem[]> {
 }
 
 async function load() {
-    const lookupColumns = props.schema.table[props.tableName].columns?.filter(c => c.type === "lookup");
+    const lookupColumns = props.schema.table[props.tableName].columns.filter(c => c.type === "lookup");
     if (lookupColumns) {
         for (const lookupColumn of lookupColumns) {
             const lookupItems = await getLookupItems(lookupColumn);
