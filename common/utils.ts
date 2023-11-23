@@ -1,4 +1,4 @@
-import { IColumnConfig, ITableConfig } from "~/assets/js/app";
+import { IColumnConfig, ITableConfig } from "~/common/types";
 
 export function findWithAttr<T>(array: T[], attr: keyof T, value: T[keyof T]): T | null {
   if (!array?.length) return null;

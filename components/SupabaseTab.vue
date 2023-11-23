@@ -30,7 +30,7 @@
 </template>
   
 <script setup lang="ts">
-import { app } from '~/assets/js/app';
+import { app } from '~/common/app';
 
 export interface ITabItem {
     tableName: string,

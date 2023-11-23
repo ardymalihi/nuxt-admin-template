@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SupabaseEdit from '~/components/SupabaseEdit.vue';
-import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
+import { IColumnConfig, ISchema, TableNames } from '~/common/types';
 import { ITabItem } from './SupabaseTab.vue';
 import { getColumnsFor } from '~/common/utils';
 

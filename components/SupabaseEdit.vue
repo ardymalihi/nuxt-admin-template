@@ -11,7 +11,7 @@ interface ISortConfig {
     direction: SortDirection;
 }
 
-import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
+import { IColumnConfig, ISchema, TableNames } from '~/common/types';
 import { getColumnsFor, getTableFor } from '~/common/utils';
 
 const props = defineProps<{

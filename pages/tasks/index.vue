@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { app } from '~/assets/js/app';
+import { app } from '~/common/app';
 definePageMeta({
     layout: "admin",
     middleware: [
