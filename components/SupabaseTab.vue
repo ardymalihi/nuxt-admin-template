@@ -18,7 +18,7 @@
             v-if="props.items.length > 0"
             :compact="true" 
             :key="props.items[activeTab].tableName"
-            :schema="app.schema" 
+            :schema="props.schema" 
             :table-name="props.items[activeTab].tableName"
             view-type="table" 
             :editable="false" 
@@ -30,7 +30,7 @@
 </template>
   
 <script setup lang="ts">
-import { app } from '~/common/app';
+import { ISchema } from '~/common/types';
 
 export interface ITabItem {
     tableName: string,
@@ -39,6 +39,7 @@ export interface ITabItem {
 }
 
 const props = defineProps<{
+    schema: ISchema;
     items: ITabItem[];
     rowObject: any;
     parentTableName: string;

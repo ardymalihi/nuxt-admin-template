@@ -454,7 +454,7 @@ await load();
                                     <td :colspan="tableColspan" class="bg-gray-400 border-none">
                                         <!-- detail section -->
                                         <section class="bg-gray-300 p-5 border-none">
-                                            <SupabaseTab :items="getTabItems()" :row-object="row" :parent-table-name="props.tableName" :parent-field-id-name="filedIdName" />
+                                            <SupabaseTab :schema="$props.schema" :items="getTabItems()" :row-object="row" :parent-table-name="props.tableName" :parent-field-id-name="filedIdName" />
                                         </section>
                                     </td>
                                 </tr>
