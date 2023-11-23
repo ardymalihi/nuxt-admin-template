@@ -145,6 +145,47 @@ export const app: IAppConfig = {
                 },
             ]
         },
+        tasks_assignee: {
+            title: "Tasks Assignee",
+            columns: [
+                {
+                    fieldName: "id",
+                    title: "ID",
+                    type: "id",
+                    columnOrder: 0,
+                    required: false,
+                    formOrder: 1,
+                },
+                {
+                    fieldName: "from_task",
+                    title: "From Task",
+                    type: "lookup",
+                    lookup: {
+                        sourceType: "table",
+                        name: "tasks",
+                        idFieldName: "id",
+                        displayFieldName: "title",
+                    },
+                    formOrder: 2,
+                    columnOrder: 2,
+                    required: true,
+                },
+                {
+                    fieldName: "to_user",
+                    title: "To User",
+                    type: "lookup",
+                    lookup: {
+                        sourceType: "table",
+                        name: "profiles",
+                        idFieldName: "id",
+                        displayFieldName: "first_name",
+                    },
+                    formOrder: 3,
+                    columnOrder: 3,
+                    required: true,
+                },
+            ],
+        },
         tasks_progress: {
             title: "Tasks Completion",
             columns: [
@@ -186,7 +227,7 @@ export const app: IAppConfig = {
                     required: true,
                 },
             ],
-        }
+        },
     }
 }
 }

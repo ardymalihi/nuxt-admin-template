@@ -10,6 +10,7 @@ const props = defineProps<{
     editable: boolean;
     showCollections: boolean;
     compact: boolean;
+    searchTerms?: string;
 }>();
 
 const rows = ref<any[]>([]);
@@ -155,7 +156,13 @@ async function load() {
     loadingData.value = true;
     console.log("columns:", getSelectFields());
     console.log("field id name:", filedIdName);
-    client.from(props.tableName).select(getSelectFields()).order(currentOrderFieldName.value, { ascending: isAscending.value }).then(({ data, error }) => {
+    console.log("table name:", props.tableName);
+    const query = client.from(props.tableName).select(getSelectFields());
+    if (props.searchTerms) {
+        query.or(props.searchTerms);
+    }
+    query.order(currentOrderFieldName.value, { ascending: isAscending.value });
+    await query.then(({ data, error }) => {
         console.log("data:", data);
         rows.value = data as any[];
         loadingData.value = false;
@@ -267,7 +274,7 @@ function getTabItems() {
                 items.push({
                     title: table.title,
                     tableName: key,
-                    searchTerms: ""
+                    idName: lookupColumn.fieldName
                 });
             }
         }
@@ -447,9 +454,7 @@ await load();
                                     <td :colspan="tableColspan" class="bg-gray-400 border-none">
                                         <!-- detail section -->
                                         <section class="bg-gray-400 p-5 border-none">
-                                            <SupabaseTab :items="getTabItems()" />
-                                            <!-- <SupabaseView :compact="true" table-name="tasks" :schema="props.schema"
-                                        view-type="table" :editable="false" :show-collections="false" /> -->
+                                            <SupabaseTab :items="getTabItems()" :row-object="row" :parent-table-name="props.tableName" :parent-field-id-name="filedIdName" />
                                         </section>
                                     </td>
                                 </tr>

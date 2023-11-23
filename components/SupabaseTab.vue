@@ -9,8 +9,8 @@
         
         <div v-for="(item, index) in props.items" :key="index">
             <div v-if="activeTab === index" name="fade" mode="in-out">
-            <SupabaseView  :compact="true" :schema="app.schema" :table-name="currentTableName"
-                view-type="table" :editable="false" :show-collections="false" />
+            <SupabaseView  :compact="true" :schema="app.schema" :table-name="props.items[index].tableName"
+                view-type="table" :editable="false" :show-collections="false" :search-terms="searchTerms" />
             </div>
         </div>
        
@@ -23,20 +23,36 @@ import { app } from '~/assets/js/app';
 export interface ITabItem {
     tableName: string,
     title: string,
-    searchTerms: string,
+    idName: string;
 }
 
 const props = defineProps<{
-    items: ITabItem[]
+    items: ITabItem[];
+    rowObject: any;
+    parentTableName: string;
+    parentFieldIdName: string;
 }>();
 
 const activeTab = ref(0);
 
 const currentTableName = computed(() => props.items[activeTab.value].tableName);
 
+const searchTerms = computed(() => {
+    const item = props.items[activeTab.value];
+    const idValue = props.rowObject[props.parentFieldIdName];
+    console.log("search terms:", `${item.idName}.eq.${idValue}`);
+    return `${item.idName}.eq.${idValue}`;
+});
+
 const setActiveTab = (index: number) => {
     activeTab.value = index;
 };
+
+// function getSearchTerms(item: ITabItem) {
+//     const idValue = props.rowObject[props.parentFieldIdName];
+//     console.log("search terms:", `${item.idName}.eq.${idValue}`);
+//     return `${item.idName}.eq.${idValue}`;
+// }
 
 onMounted(() => {
     // Set the initial active tab to the first tab

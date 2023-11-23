@@ -9,6 +9,13 @@ definePageMeta({
 </script>
 <template>
     <div class="container mx-auto">
-        <SupabaseView :compact="false" :schema="app.schema" table-name="tasks" view-type="table" :editable="true" :show-collections="true" />
+        <SupabaseView 
+        :compact="false" 
+        :schema="app.schema" 
+        table-name="tasks" 
+        view-type="table" 
+        :editable="true" 
+        :show-collections="true"
+    />
     </div>
 </template>
