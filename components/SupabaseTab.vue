@@ -1,19 +1,31 @@
 <template>
     <div>
         <div class="flex flex-row">
-            <div v-for="(item, index) in props.items" :key="index" @click="setActiveTab(index)"
-                :class="index === activeTab ? 'bg-gray-600' : 'bg-gray-500'" class="text-center p-2 mr-1 mb-[1px] text-white cursor-pointer">
+            <div 
+                v-for="(item, index) in props.items" 
+                :key="index" 
+                @click="setActiveTab(index)"
+                :class="index === activeTab ? 'bg-gray-600' : 'bg-gray-500'" 
+                class="text-center p-2 mr-1  text-white cursor-pointer"
+            >
                 {{ item.title }}
             </div>
         </div>
         
-        <div v-for="(item, index) in props.items" :key="index">
-            <div v-if="activeTab === index" name="fade" mode="in-out">
-            <SupabaseView  :compact="true" :schema="app.schema" :table-name="props.items[index].tableName"
-                view-type="table" :editable="false" :show-collections="false" :search-terms="searchTerms" />
-            </div>
+        <div class="flex flex-col">
+        
+            <SupabaseView 
+            v-if="props.items.length > 0"
+            :compact="true" 
+            :key="props.items[activeTab].tableName"
+            :schema="app.schema" 
+            :table-name="currentTableName"
+            view-type="table" 
+            :editable="false" 
+            :show-collections="false" 
+            :search-terms="searchTerms" />
+        
         </div>
-       
     </div>
 </template>
   
@@ -34,8 +46,7 @@ const props = defineProps<{
 }>();
 
 const activeTab = ref(0);
-
-const currentTableName = computed(() => props.items[activeTab.value].tableName);
+const currentTableName = ref(props.items[0].tableName);
 
 const searchTerms = computed(() => {
     const item = props.items[activeTab.value];
@@ -46,23 +57,11 @@ const searchTerms = computed(() => {
 
 const setActiveTab = (index: number) => {
     activeTab.value = index;
+    currentTableName.value = props.items[index].tableName;
 };
-
-// function getSearchTerms(item: ITabItem) {
-//     const idValue = props.rowObject[props.parentFieldIdName];
-//     console.log("search terms:", `${item.idName}.eq.${idValue}`);
-//     return `${item.idName}.eq.${idValue}`;
-// }
 
 onMounted(() => {
     // Set the initial active tab to the first tab
-    setActiveTab(0);
+    activeTab.value = 0;
 });
 </script>
-  
-<style scoped>
-.tab.active {
-    background-color: #f0f0f0;
-}
-</style>
-  

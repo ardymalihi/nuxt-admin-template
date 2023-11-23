@@ -156,7 +156,7 @@ async function load() {
     loadingData.value = true;
     console.log("columns:", getSelectFields());
     console.log("field id name:", filedIdName);
-    console.log("table name:", props.tableName);
+    console.log("table name:", props.tableName)
     const query = client.from(props.tableName).select(getSelectFields());
     if (props.searchTerms) {
         query.or(props.searchTerms);
@@ -453,7 +453,7 @@ await load();
                                 <tr v-if="expandedId && (expandedId === String((row as any)[filedIdName]))">
                                     <td :colspan="tableColspan" class="bg-gray-400 border-none">
                                         <!-- detail section -->
-                                        <section class="bg-gray-400 p-5 border-none">
+                                        <section class="bg-gray-300 p-5 border-none">
                                             <SupabaseTab :items="getTabItems()" :row-object="row" :parent-table-name="props.tableName" :parent-field-id-name="filedIdName" />
                                         </section>
                                     </td>
@@ -505,5 +505,6 @@ await load();
                 </button>
             </div>
         </div>
+        <div v-if="!rows?.length" class="p-5 bg-stone-100">There is no information available</div>
     </div>
 </template>
