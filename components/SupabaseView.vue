@@ -2,6 +2,7 @@
 import SupabaseEdit from '~/components/SupabaseEdit.vue';
 import { IColumnConfig, ISchema, TableNames } from '~/assets/js/app';
 import { ITabItem } from './SupabaseTab.vue';
+import { getColumnsFor } from '~/common/utils';
 
 const props = defineProps<{
     schema: ISchema;
@@ -21,7 +22,7 @@ const editMode = ref(false);
 const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
 const supabaseEdit = ref<InstanceType<typeof SupabaseEdit> | null>(null);
-const filedIdName = props.schema.table[props.tableName].columns.find(c => c.type === "id")?.fieldName ?? "id";
+const filedIdName = getColumnsFor(props.schema.tables, props.tableName).find(c => c.type === "id")?.fieldName ?? "id";
 const currentOrderFieldName = ref(filedIdName);
 const isAscending = ref(true);
 const expandedId = ref<string>();
@@ -117,7 +118,7 @@ async function deleteRecord() {
 function getSelectFields(): string {
     let selectedFields = "*";
     let selectedLookups = "";
-    const columns = (props.schema.table[props.tableName].columns);
+    const columns = getColumnsFor(props.schema.tables, props.tableName);
     if (columns.length) {
         selectedFields = columns.map(c => c.fieldName).join(",");
         const lookups: {
@@ -186,7 +187,7 @@ function showEditModal(id: string) {
 
 function createEmptyRow(): any {
     const result: any = {};
-    for (let c of props.schema.table[props.tableName].columns) {
+    for (let c of getColumnsFor(props.schema.tables, props.tableName)) {
         result[c.fieldName] = c.defaultValue ?? null;
     }
     return result;
@@ -204,7 +205,7 @@ function getInsertReadyObject(obj: any) {
 
 function getUpdateReadyObject(obj: any) {
     const result: any = {};
-    const columns = (props.schema.table[props.tableName].columns);
+    const columns = getColumnsFor(props.schema.tables, props.tableName);
     for (const column of columns) {
         result[column.fieldName] = obj[column.fieldName] ?? null;
     }
@@ -230,7 +231,7 @@ async function handleSubmit({ model }: any) {
 }
 
 function getOrderedColumns() {
-    let result = props.schema.table[props.tableName].columns.filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder) || [];
+    let result = getColumnsFor(props.schema.tables, props.tableName).filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder) || [];
     const currentScreenType = getActiveTailwindBreakpoint();
     if (currentScreenType === "mobile") {
         result = result.slice(0, 2);
@@ -241,7 +242,7 @@ function getOrderedColumns() {
 }
 
 function getOrderedCards() {
-    return props.schema.table[props.tableName].columns.filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder).slice(0, 3);
+    return getColumnsFor(props.schema.tables, props.tableName).filter(c => c.columnOrder > 0).sort((a, b) => a.columnOrder - b.columnOrder).slice(0, 3);
 }
 
 async function orderBy(column: IColumnConfig) {
@@ -266,14 +267,13 @@ function getCardStyle(column: IColumnConfig) {
 
 function getTabItems() {
     const items: ITabItem[] = [];
-    for (const key of Object.keys(props.schema.table)) {
-        if (key !== props.tableName) {
-            const table = props.schema.table[key];
+    for (const table of props.schema.tables) {
+        if (table.name !== props.tableName) {
             const lookupColumns = table.columns.filter(c => c.lookup && c.lookup.name === props.tableName);
             for (const lookupColumn of lookupColumns) {
                 items.push({
                     title: table.title,
-                    tableName: key,
+                    tableName: table.name,
                     idName: lookupColumn.fieldName
                 });
             }
