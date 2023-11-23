@@ -19,7 +19,7 @@
             :compact="true" 
             :key="props.items[activeTab].tableName"
             :schema="app.schema" 
-            :table-name="currentTableName"
+            :table-name="props.items[activeTab].tableName"
             view-type="table" 
             :editable="false" 
             :show-collections="false" 
@@ -46,7 +46,7 @@ const props = defineProps<{
 }>();
 
 const activeTab = ref(0);
-const currentTableName = ref(props.items[0].tableName);
+
 
 const searchTerms = computed(() => {
     const item = props.items[activeTab.value];
@@ -57,7 +57,6 @@ const searchTerms = computed(() => {
 
 const setActiveTab = (index: number) => {
     activeTab.value = index;
-    currentTableName.value = props.items[index].tableName;
 };
 
 onMounted(() => {
