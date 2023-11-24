@@ -12,6 +12,7 @@ const props = defineProps<{
     showCollections: boolean;
     compact: boolean;
     searchTerms?: string;
+    sortBy?: string;
 }>();
 
 const rows = ref<any[]>([]);
@@ -23,7 +24,7 @@ const currentId = ref<string>();
 const currentRow = ref<any>(createEmptyRow());
 const supabaseEdit = ref<InstanceType<typeof SupabaseEdit> | null>(null);
 const filedIdName = getColumnsFor(props.schema.tables, props.tableName).find(c => c.type === "id")?.fieldName ?? "id";
-const currentOrderFieldName = ref(filedIdName);
+const currentOrderFieldName = ref(props.sortBy ?? filedIdName);
 const isAscending = ref(true);
 const expandedId = ref<string>();
 const orderedColumns = ref<IColumnConfig[]>(getOrderedColumns() ?? []);
@@ -145,14 +146,6 @@ function getSelectFields(): string {
         selectedFields = selectedFields + (selectedLookups ? `, ${selectedLookups}` : "");
     }
     return selectedFields;
-}
-
-function delay(ms: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, ms);
-    });
 }
 
 async function load() {

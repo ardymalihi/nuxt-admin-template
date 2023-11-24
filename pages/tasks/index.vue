@@ -16,6 +16,7 @@ definePageMeta({
         view-type="table" 
         :editable="true" 
         :show-collections="true"
+        sort-by="title"
     />
     </div>
 </template>

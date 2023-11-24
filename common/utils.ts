@@ -17,3 +17,11 @@ export function getTableFor(tables: ITableConfig[], tableName: string) : ITableC
 export function getColumnsFor(tables: ITableConfig[], tableName: string): IColumnConfig[] {
     return getTableFor(tables, tableName)?.columns ?? []
 }
+
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+      setTimeout(() => {
+          resolve();
+      }, ms);
+  });
+}
