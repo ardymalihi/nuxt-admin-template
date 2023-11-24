@@ -38,7 +38,6 @@ export const app: IAppConfig = {
                         fieldName: "title",
                         title: "Title",
                         type: "string",
-                        defaultValue: "Hi There!",
                         formOrder: 1,
                         columnOrder: 3,
                         required: true,
@@ -54,7 +53,6 @@ export const app: IAppConfig = {
                         fieldName: "completed",
                         title: "Completed",
                         type: "boolean",
-                        defaultValue: true,
                         formOrder: 2,
                         required: false,
                         columnOrder: 4,
@@ -111,7 +109,7 @@ export const app: IAppConfig = {
                         title: "Created At",
                         columnOrder: 6,
                         formOrder: 5,
-                        required: false,
+                        required: true,
                     }
                 ]
             },
