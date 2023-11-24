@@ -240,6 +240,11 @@ onMounted(async () => {
                                         v-model="props.model[column.fieldName]"
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" />
                                 </div>
+                                <div v-else-if="column.type === 'timestamp'">
+                                    <Timestamp :id="column.fieldName"
+                                        v-model="props.model[column.fieldName]"
+                                        class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none" />
+                                </div>
                                 <div v-else="column.type === 'string'">
                                     <input v-model="props.model[column.fieldName]"
                                         class="w-full rounded border px-3 py-2 text-gray-700 focus:outline-none"
