@@ -4,7 +4,7 @@ type FormValidationHandler = (model: any) => Promise<string | undefined>;
 export interface IColumnConfig {
     fieldName: string;
     title: string;
-    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date" | "file_url";
+    type: "id" | "boolean" | "string" | "number" | "lookup" | "memo" | "image_url" | "date" | "file_url" | "timestamp";
     defaultValue?: any;
     columnOrder: number;
     formOrder: number;

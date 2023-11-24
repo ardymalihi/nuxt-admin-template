@@ -67,6 +67,8 @@ function formatValue(row: any, column: IColumnConfig): string {
         }
     } else if (column.type === "boolean") {
         value = value ? "YES" : "NO";
+    } else if (column.type === "timestamp") {
+        value = new Date(value).toLocaleString();
     }
 
     if (column.customFormatter) {
@@ -163,7 +165,7 @@ async function load() {
         query.or(props.searchTerms);
     }
     query.order(currentOrderFieldName.value, { ascending: isAscending.value });
-    await query.then(({ data, error }) => {
+    query.then(({ data, error }) => {
         console.log("data:", data);
         rows.value = data as any[];
         loadingData.value = false;

@@ -105,6 +105,14 @@ export const app: IAppConfig = {
                             }
                         ]
                     },
+                    {
+                        fieldName: "created_at",
+                        type: "timestamp",
+                        title: "Created At",
+                        columnOrder: 6,
+                        formOrder: 5,
+                        required: false,
+                    }
                 ]
             },
             {
@@ -196,6 +204,14 @@ export const app: IAppConfig = {
                         formOrder: 3,
                         columnOrder: 1,
                         required: true,
+                    },
+                    {
+                        fieldName: "created_at",
+                        type: "timestamp",
+                        title: "Created At",
+                        columnOrder: 6,
+                        formOrder: 5,
+                        required: false,
                     },
                 ],
             },
